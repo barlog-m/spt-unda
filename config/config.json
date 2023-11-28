@@ -1,5 +1,5 @@
 {
     "maxPmcGroupSize": 3,
     "maxScavGroupSize": 5,
-    "debug": true
+    "debug": false
 }

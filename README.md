@@ -17,15 +17,19 @@ If you happy with big spawn mods don't use this one. I made it mostly for myself
 
 This mod realize only one algorithm for spawns with minimal settings.
 
-For PMC
+## For PMC
+
 Maximum amount of PMC on a map (locationData.base.BotMax) split by random size groups from 1 to `config.maxPmcGroupSize` randomly spreaded by spawn zones. List of zones shuffle after every raid. Spawns as a bosses in beginnig of raid (game spawn them in first 60 seconds, i don't know why not early).
 
-For Scavs.
+## For Scavs
+
 Marksman scavs spawn is 100% on their regular places in group of 1. Except for Shoreline where group size is 1 to 2 marksman scavs.
 
 Maximum amount of regular scavs on a map (locationData.base.BotMax - amount of marksman scavs) split by random size groups from 1 to `config.maxScavGroupSize` randomly spreaded by spawn zones.
 Scavs spawns in 3 general waves:
-normal difficulty between 60 seconds and + 120 seconds.
-normal difficulty between raidLength / 4 and + 120 seconds.
-hard difficulty between raidLength / 2 and + 120 seconds.
 
+normal difficulty between 60 seconds and + 120 seconds.
+
+normal difficulty between raidLength / 4 and + 120 seconds.
+
+hard difficulty between raidLength / 2 and + 120 seconds.
