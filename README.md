@@ -18,7 +18,7 @@ This mod realize only one algorithm for spawns with minimal settings.
 
 ## For PMC
 
-Amount of PMC randomly selected between `locationData.base.MinPlayers` and `locationData.base.MaxPlayers` split by random size groups from 1 to `config.maxPmcGroupSize` randomly spreaded by bot spawn zones. List of zones shuffle every time. PMC spawns as a bosses in beginnig of raid (game spawn them in first 60 seconds).
+Amount of PMC randomly selected between `locationData.base.MinPlayers` and `locationData.base.MaxPlayers` split by random size groups from 1 to `config.maxPmcGroupSize` randomly spreaded by bot spawn zones. List of zones shuffle every time. PMC spawns as a bosses and followers in beginnig of raid (game spawn them in first 60 seconds).
 
 ## For Scavs
 
@@ -28,6 +28,6 @@ Scavs spawns in 3 general waves:
 
 - normal difficulty between 60 seconds and +120 seconds.
 - normal difficulty between `raidLength / 4` and +120 seconds.
-- hard difficulty between `raidLength` / 2 and +120 seconds.
+- hard difficulty between `raidLength / 2` and +120 seconds.
 
-PMC and Scavs waves and groups generate after each raid from scratch.
+**PMC and Scavs waves and groups generate after each raid from scratch.**
