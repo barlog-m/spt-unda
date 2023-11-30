@@ -25,8 +25,9 @@ Amount of PMC randomly selected between `locationData.base.MinPlayers` and `loca
 Maximum amount of regular scavs on a map (locationData.base.BotMax - amount of marksman scavs) split by random size groups from 0 to `config.maxScavGroupSize` randomly spreaded by spawn zones.
 
 Scavs spawns in 3 general waves:
--normal difficulty between 60 seconds and +120 seconds.
--normal difficulty between `raidLength / 4` and +120 seconds.
--hard difficulty between `raidLength` / 2 and +120 seconds.
+
+- normal difficulty between 60 seconds and +120 seconds.
+- normal difficulty between `raidLength / 4` and +120 seconds.
+- hard difficulty between `raidLength` / 2 and +120 seconds.
 
 PMC and Scavs waves and groups generate after each raid from scratch.
