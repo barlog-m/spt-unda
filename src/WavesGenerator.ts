@@ -151,7 +151,7 @@ export class WavesGenerator {
                     this.increaseLocationMaxBotsAmount(
                         locationName,
                         maxBots,
-                        4
+                        this.randomUtil.getInt(2, 5)
                     );
 
                     this.generalLocationInfo[locationName] = {
@@ -169,7 +169,10 @@ export class WavesGenerator {
                 this.increaseLocationMaxBotsAmount(
                     locationName,
                     maxBots,
-                    maxPlayers
+                    this.randomUtil.getInt(
+                        Math.round(minPlayers / 2),
+                        minPlayers + 1
+                    )
                 );
 
                 this.generalLocationInfo[locationName] = {
