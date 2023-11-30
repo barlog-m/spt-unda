@@ -28,6 +28,7 @@ type ZoneGroupSize = { zoneName: string; groupSize: number };
 type GeneralLocationInfo = {
     marksmanZones: string[];
     zones: string[];
+    minPlayers: number;
     maxPlayers: number;
     maxMarksmans: number;
     maxScavs: number;
@@ -36,6 +37,7 @@ type GeneralLocationInfo = {
 @injectable()
 export class WavesGenerator {
     readonly mapsToIgnore: string[] = [
+        "base",
         "develop",
         "hideout",
         "privatearea",
@@ -64,7 +66,7 @@ export class WavesGenerator {
 
     public generateWaves(): undefined {
         this.deleteAllCustomWaves();
-        this.generatePmcBossWaves();
+        this.replacePmcBossWaves();
         this.replaceScavWaves();
         this.logger.info("[Unda] Bot waves generated");
     }
@@ -86,9 +88,7 @@ export class WavesGenerator {
     }
 
     deleteAllCustomWaves(): undefined {
-        for (const locationName of Object.keys(
-            this.locationConfig.customWaves.boss
-        )) {
+        for (const locationName of Object.keys(this.locations)) {
             if (this.mapsToIgnore.includes(locationName)) {
                 continue;
             }
@@ -136,6 +136,7 @@ export class WavesGenerator {
 
                 const zones = this.getLocationZones(locationName);
 
+                const minPlayers = this.getLocationMinPlayers(locationName);
                 const maxPlayers = this.getLocationMaxPlayers(locationName);
 
                 const maxMarksmans = this.getLocationMaxMarksmans(
@@ -143,12 +144,38 @@ export class WavesGenerator {
                     marksmanZones.length
                 );
 
-                const maxScavs =
-                    this.getLocationMaxBots(locationName) - maxMarksmans;
+                const maxBots = this.getLocationMaxBots(locationName);
+                const maxScavs = maxBots - maxMarksmans;
+
+                if (locationName === "tarkovstreets") {
+                    this.increaseLocationMaxBotsAmount(
+                        locationName,
+                        maxBots,
+                        4
+                    );
+
+                    this.generalLocationInfo[locationName] = {
+                        marksmanZones,
+                        zones,
+                        minPlayers: 8,
+                        maxPlayers: 12,
+                        maxMarksmans,
+                        maxScavs,
+                    };
+
+                    continue;
+                }
+
+                this.increaseLocationMaxBotsAmount(
+                    locationName,
+                    maxBots,
+                    maxPlayers
+                );
 
                 this.generalLocationInfo[locationName] = {
                     marksmanZones,
                     zones,
+                    minPlayers,
                     maxPlayers,
                     maxMarksmans,
                     maxScavs,
@@ -163,6 +190,21 @@ export class WavesGenerator {
                 )}`
             );
         }
+    }
+
+    increaseLocationMaxBotsAmount(
+        locationName: string,
+        maxBots: number,
+        term: number
+    ): undefined {
+        const locationData: ILocationData = this.locations[locationName];
+        locationData.base.BotMax = maxBots + term;
+        this.botConfig.maxBotCap[locationName] = maxBots + term;
+    }
+
+    getLocationMinPlayers(locationName: string): number {
+        const locationData: ILocationData = this.locations[locationName];
+        return locationData.base.MinPlayers;
     }
 
     getLocationMaxPlayers(locationName: string): number {
@@ -317,6 +359,7 @@ export class WavesGenerator {
         maxGroupSize: number
     ): number {
         let num = 0;
+        const minGroupSize = maxGroupSize > 1 ? 1 : 0;
         zones.forEach((zone) => {
             locationBase.waves.push(
                 this.generateWave(
@@ -324,7 +367,7 @@ export class WavesGenerator {
                     zone,
                     "hard",
                     num++,
-                    1,
+                    minGroupSize,
                     maxGroupSize,
                     60,
                     90
@@ -393,7 +436,7 @@ export class WavesGenerator {
                 zoneByBroup.zoneName,
                 difficulty,
                 currentWaveNumber++,
-                zoneByBroup.groupSize,
+                1,
                 zoneByBroup.groupSize,
                 timeMin,
                 timeMax
@@ -428,16 +471,19 @@ export class WavesGenerator {
         };
     }
 
-    generatePmcBossWaves(): undefined {
-        for (const locationName of Object.keys(
-            this.locationConfig.customWaves.boss
-        )) {
+    replacePmcBossWaves(): undefined {
+        for (const locationName of Object.keys(this.locations)) {
             if (this.mapsToIgnore.includes(locationName)) {
                 continue;
             }
 
+            const minPlayers =
+                this.generalLocationInfo[locationName].minPlayers;
+            const maxPlayers =
+                this.generalLocationInfo[locationName].maxPlayers;
+
             const maxPmcAmount =
-                this.generalLocationInfo[locationName].maxPlayers - 1;
+                this.randomUtil.getInt(minPlayers, maxPlayers) - 1;
             if (maxPmcAmount <= 0) {
                 this.logger.error(
                     `[Unda] ${locationName}.maxPlayers: ${maxPmcAmount}`
