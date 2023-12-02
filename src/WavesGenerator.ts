@@ -368,6 +368,10 @@ export class WavesGenerator {
                 continue;
             }
 
+            if (locationName === "laboratory") {
+                continue;
+            }
+
             const location: ILocationData = locationObj;
 
             if (location.base) {
