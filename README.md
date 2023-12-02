@@ -32,4 +32,8 @@ Scavs spawns in 3 general waves:
 
 **PMC and Scavs waves and groups generate after each raid from scratch.**
 
-Since PMC bots count as bots in game, mod increases MaxBots value for each map by random value between `MinPlayers / 2` and `MinPlayers + 1`.
+Since PMC bots count as bots in game, mod increases MaxBots value for most maps by random value between `MinPlayers / 2` and `MinPlayers + 1`.
+
+For small maps like Factory, Laboratory and Reserve by random value between `MaxPlayers / 2` and `MaxPlayers - 1`.
+
+And for Streets by random value between `2` and `5`.

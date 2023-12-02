@@ -28,6 +28,7 @@ type ZoneGroupSize = { zoneName: string; groupSize: number };
 type GeneralLocationInfo = {
     marksmanZones: string[];
     zones: string[];
+    maxBots: number;
     minPlayers: number;
     maxPlayers: number;
     maxMarksmans: number;
@@ -36,7 +37,7 @@ type GeneralLocationInfo = {
 
 @injectable()
 export class WavesGenerator {
-    readonly mapsToIgnore: string[] = [
+    readonly locationsToIgnore: string[] = [
         "base",
         "develop",
         "hideout",
@@ -44,6 +45,13 @@ export class WavesGenerator {
         "suburbs",
         "terminal",
         "town",
+    ];
+
+    readonly smallLocations: string[] = [
+        "factory4_day",
+        "factory4_night",
+        "laboratory",
+        "rezervbase",
     ];
 
     private databaseTables: IDatabaseTables;
@@ -66,6 +74,7 @@ export class WavesGenerator {
 
     public generateWaves(): undefined {
         this.deleteAllCustomWaves();
+        this.updateMaxBotsAmount();
         this.replacePmcBossWaves();
         this.replaceScavWaves();
         this.logger.info("[Unda] Bot waves generated");
@@ -89,7 +98,7 @@ export class WavesGenerator {
 
     deleteAllCustomWaves(): undefined {
         for (const locationName of Object.keys(this.locations)) {
-            if (this.mapsToIgnore.includes(locationName)) {
+            if (this.locationsToIgnore.includes(locationName)) {
                 continue;
             }
 
@@ -124,7 +133,7 @@ export class WavesGenerator {
         for (const [locationName, locationObj] of Object.entries(
             this.locations
         )) {
-            if (this.mapsToIgnore.includes(locationName)) {
+            if (this.locationsToIgnore.includes(locationName)) {
                 continue;
             }
 
@@ -147,37 +156,10 @@ export class WavesGenerator {
                 const maxBots = this.getLocationMaxBots(locationName);
                 const maxScavs = maxBots - maxMarksmans;
 
-                if (locationName === "tarkovstreets") {
-                    this.increaseLocationMaxBotsAmount(
-                        locationName,
-                        maxBots,
-                        this.randomUtil.getInt(2, 5)
-                    );
-
-                    this.generalLocationInfo[locationName] = {
-                        marksmanZones,
-                        zones,
-                        minPlayers: 8,
-                        maxPlayers: 12,
-                        maxMarksmans,
-                        maxScavs,
-                    };
-
-                    continue;
-                }
-
-                this.increaseLocationMaxBotsAmount(
-                    locationName,
-                    maxBots,
-                    this.randomUtil.getInt(
-                        Math.round(minPlayers / 2),
-                        minPlayers + 1
-                    )
-                );
-
                 this.generalLocationInfo[locationName] = {
                     marksmanZones,
                     zones,
+                    maxBots,
                     minPlayers,
                     maxPlayers,
                     maxMarksmans,
@@ -195,14 +177,99 @@ export class WavesGenerator {
         }
     }
 
-    increaseLocationMaxBotsAmount(
+    updateMaxBotsAmount(): undefined {
+        for (const [locationName, locationObj] of Object.entries(
+            this.locations
+        )) {
+            if (this.locationsToIgnore.includes(locationName)) {
+                continue;
+            }
+
+            const location: ILocationData = locationObj;
+
+            if (location.base) {
+                if (locationName === "tarkovstreets") {
+                    this.increaseMaxBotsAmountForStreets(
+                        this.generalLocationInfo["tarkovstreets"].maxBots
+                    );
+                } else if (this.smallLocations.includes(locationName)) {
+                    const { maxBots, maxPlayers } =
+                        this.generalLocationInfo[locationName];
+                    this.increaseMaxBotsAmountForSmallLocation(
+                        locationName,
+                        maxBots,
+                        maxPlayers
+                    );
+                } else {
+                    const { maxBots, minPlayers } =
+                        this.generalLocationInfo[locationName];
+                    this.increaseMaxBotsAmountForLargeLocation(
+                        locationName,
+                        maxBots,
+                        minPlayers
+                    );
+                }
+            }
+        }
+    }
+
+    increaseMaxBotsAmountForLargeLocation(
+        locationName: string,
+        maxBots: number,
+        minPlayers: number
+    ): number {
+        const term = this.randomUtil.getInt(
+            Math.round(minPlayers / 2),
+            minPlayers + 1
+        );
+        return this.increaseMaxBotsAmountForLocation(
+            locationName,
+            maxBots,
+            term
+        );
+    }
+
+    increaseMaxBotsAmountForSmallLocation(
+        locationName: string,
+        maxBots: number,
+        maxPlayers: number
+    ): number {
+        const term = this.randomUtil.getInt(
+            Math.round(maxPlayers / 2),
+            maxPlayers - 1
+        );
+        return this.increaseMaxBotsAmountForLocation(
+            locationName,
+            maxBots,
+            term
+        );
+    }
+
+    increaseMaxBotsAmountForStreets(maxBots: number): number {
+        const term = this.randomUtil.getInt(2, 5);
+        return this.increaseMaxBotsAmountForLocation(
+            "tarkovstreets",
+            maxBots,
+            term
+        );
+    }
+
+    increaseMaxBotsAmountForLocation(
         locationName: string,
         maxBots: number,
         term: number
-    ): undefined {
+    ): number {
         const locationData: ILocationData = this.locations[locationName];
-        locationData.base.BotMax = maxBots + term;
-        this.botConfig.maxBotCap[locationName] = maxBots + term;
+        const newMaxBotsValue = maxBots + term;
+        locationData.base.BotMax = newMaxBotsValue;
+        this.botConfig.maxBotCap[locationName] = newMaxBotsValue;
+
+        if (config.debug) {
+            this.logger.info(
+                `[Unda] ${locationName}.BotMax: ${maxBots} -> ${newMaxBotsValue}`
+            );
+        }
+        return newMaxBotsValue;
     }
 
     getLocationMinPlayers(locationName: string): number {
@@ -297,7 +364,7 @@ export class WavesGenerator {
         for (const [locationName, locationObj] of Object.entries(
             this.locations
         )) {
-            if (this.mapsToIgnore.includes(locationName)) {
+            if (this.locationsToIgnore.includes(locationName)) {
                 continue;
             }
 
@@ -476,7 +543,7 @@ export class WavesGenerator {
 
     replacePmcBossWaves(): undefined {
         for (const locationName of Object.keys(this.locations)) {
-            if (this.mapsToIgnore.includes(locationName)) {
+            if (this.locationsToIgnore.includes(locationName)) {
                 continue;
             }
 
