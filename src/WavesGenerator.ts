@@ -17,9 +17,9 @@ import {
 import { RandomUtil } from "@spt-aki/utils/RandomUtil";
 import { HashUtil } from "@spt-aki/utils/HashUtil";
 import { ILocations } from "@spt-aki/models/spt/server/ILocations";
-
 import { ConfigServer } from "@spt-aki/servers/ConfigServer";
 import { ConfigTypes } from "@spt-aki/models/enums/ConfigTypes";
+import { PreAkiModLoader } from "@spt-aki/loaders/PreAkiModLoader";
 
 import * as config from "../config/config.json";
 
@@ -69,7 +69,8 @@ export class WavesGenerator {
         @inject("RandomUtil") protected randomUtil: RandomUtil,
         @inject("DatabaseServer") protected databaseServer: DatabaseServer,
         @inject("ConfigServer")
-        protected configServer: ConfigServer
+        protected configServer: ConfigServer,
+        @inject("PreAkiModLoader") protected preAkiModLoader: PreAkiModLoader
     ) {}
 
     public generateWaves(): undefined {
@@ -682,5 +683,27 @@ export class WavesGenerator {
             [result[i], result[j]] = [result[j], result[i]];
         }
         return result;
+    }
+
+    public applySainIncompatibilityWorkaround(): undefined {
+        if (
+            this.preAkiModLoader
+                .getImportedModsNames()
+                .includes("zSolarint-SAIN-ServerMod")
+        ) {
+            this.sainIncompatibilityWorkaround();
+        }
+    }
+
+    sainIncompatibilityWorkaround(): undefined {
+        const pmcConfig = this.configServer.getConfig<IPmcConfig>(
+            ConfigTypes.PMC
+        );
+
+        pmcConfig.difficulty = "normal";
+
+        this.logger.warning(
+            "[Unda] SAIN detected. Incompatibility workaround enabled."
+        );
     }
 }

@@ -24,6 +24,7 @@ export class Unda implements IPreAkiLoadMod, IPostAkiLoadMod {
     postAkiLoad(container: DependencyContainer): void {
         const wavesGenerator =
             container.resolve<WavesGenerator>("UndaWavesGenerator");
+        wavesGenerator.applySainIncompatibilityWorkaround();
         wavesGenerator.fillInitialData();
         wavesGenerator.generateWaves();
     }
