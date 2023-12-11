@@ -19,7 +19,6 @@ import { HashUtil } from "@spt-aki/utils/HashUtil";
 import { ILocations } from "@spt-aki/models/spt/server/ILocations";
 import { ConfigServer } from "@spt-aki/servers/ConfigServer";
 import { ConfigTypes } from "@spt-aki/models/enums/ConfigTypes";
-import { PreAkiModLoader } from "@spt-aki/loaders/PreAkiModLoader";
 
 import * as config from "../config/config.json";
 
@@ -69,8 +68,7 @@ export class WavesGenerator {
         @inject("RandomUtil") protected randomUtil: RandomUtil,
         @inject("DatabaseServer") protected databaseServer: DatabaseServer,
         @inject("ConfigServer")
-        protected configServer: ConfigServer,
-        @inject("PreAkiModLoader") protected preAkiModLoader: PreAkiModLoader
+        protected configServer: ConfigServer
     ) {}
 
     public generateWaves(): undefined {
@@ -130,6 +128,7 @@ export class WavesGenerator {
         this.locations = this.databaseTables.locations;
 
         this.disableAllConversionToPmc();
+        this.setPmcBotDifficulty();
 
         for (const [locationName, locationObj] of Object.entries(
             this.locations
@@ -511,7 +510,7 @@ export class WavesGenerator {
                 zoneByBroup.zoneName,
                 difficulty,
                 currentWaveNumber++,
-                1,
+                0,
                 zoneByBroup.groupSize,
                 timeMin,
                 timeMax
@@ -685,25 +684,15 @@ export class WavesGenerator {
         return result;
     }
 
-    public applySainIncompatibilityWorkaround(): undefined {
-        if (
-            this.preAkiModLoader
-                .getImportedModsNames()
-                .includes("zSolarint-SAIN-ServerMod")
-        ) {
-            this.sainIncompatibilityWorkaround();
-        }
-    }
-
-    sainIncompatibilityWorkaround(): undefined {
+    setPmcBotDifficulty(): undefined {
         const pmcConfig = this.configServer.getConfig<IPmcConfig>(
             ConfigTypes.PMC
         );
 
-        pmcConfig.difficulty = "normal";
+        pmcConfig.difficulty = config.pmcBotDifficulty;
 
-        this.logger.warning(
-            "[Unda] SAIN detected. Incompatibility workaround enabled."
+        this.logger.info(
+            `[Unda] PMC bot difficulty set to '${config.pmcBotDifficulty}'`
         );
     }
 }

@@ -1,5 +1,6 @@
 {
     "maxPmcGroupSize": 3,
     "maxScavGroupSize": 5,
+    "pmcBotDifficulty": "hard",
     "debug": false
 }
