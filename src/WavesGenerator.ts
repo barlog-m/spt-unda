@@ -128,7 +128,6 @@ export class WavesGenerator {
         this.locations = this.databaseTables.locations;
 
         this.disableAllConversionToPmc();
-        this.setPmcBotDifficulty();
 
         for (const [locationName, locationObj] of Object.entries(
             this.locations
@@ -580,7 +579,7 @@ export class WavesGenerator {
                 this.locationConfig.customWaves.boss[locationName].push(
                     this.generatePmcAsBoss(
                         groupByZone.groupSize,
-                        this.pmcConfig.difficulty,
+                        config.pmcBotDifficulty,
                         groupByZone.zoneName
                     )
                 );
@@ -682,17 +681,5 @@ export class WavesGenerator {
             [result[i], result[j]] = [result[j], result[i]];
         }
         return result;
-    }
-
-    setPmcBotDifficulty(): undefined {
-        const pmcConfig = this.configServer.getConfig<IPmcConfig>(
-            ConfigTypes.PMC
-        );
-
-        pmcConfig.difficulty = config.pmcBotDifficulty;
-
-        this.logger.info(
-            `[Unda] PMC bot difficulty set to '${config.pmcBotDifficulty}'`
-        );
     }
 }
