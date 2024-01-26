@@ -10,7 +10,6 @@ import { ConfigServer } from "@spt-aki/servers/ConfigServer";
 import { DatabaseServer } from "@spt-aki/servers/DatabaseServer";
 import { SaveServer } from "@spt-aki/servers/SaveServer";
 import { LocalisationService } from "@spt-aki/services/LocalisationService";
-import { RagfairCategoriesService } from "@spt-aki/services/RagfairCategoriesService";
 import { HttpResponseUtil } from "@spt-aki/utils/HttpResponseUtil";
 import { RagfairOfferHolder } from "@spt-aki/utils/RagfairOfferHolder";
 import { TimeUtil } from "@spt-aki/utils/TimeUtil";
@@ -20,17 +19,17 @@ export declare class RagfairOfferService {
     protected databaseServer: DatabaseServer;
     protected saveServer: SaveServer;
     protected ragfairServerHelper: RagfairServerHelper;
-    protected ragfairCategoriesService: RagfairCategoriesService;
     protected profileHelper: ProfileHelper;
     protected eventOutputHolder: EventOutputHolder;
     protected httpResponse: HttpResponseUtil;
     protected localisationService: LocalisationService;
     protected configServer: ConfigServer;
     protected playerOffersLoaded: boolean;
+    /** Offer id + offer object */
     protected expiredOffers: Record<string, IRagfairOffer>;
     protected ragfairConfig: IRagfairConfig;
     protected ragfairOfferHandler: RagfairOfferHolder;
-    constructor(logger: ILogger, timeUtil: TimeUtil, databaseServer: DatabaseServer, saveServer: SaveServer, ragfairServerHelper: RagfairServerHelper, ragfairCategoriesService: RagfairCategoriesService, profileHelper: ProfileHelper, eventOutputHolder: EventOutputHolder, httpResponse: HttpResponseUtil, localisationService: LocalisationService, configServer: ConfigServer);
+    constructor(logger: ILogger, timeUtil: TimeUtil, databaseServer: DatabaseServer, saveServer: SaveServer, ragfairServerHelper: RagfairServerHelper, profileHelper: ProfileHelper, eventOutputHolder: EventOutputHolder, httpResponse: HttpResponseUtil, localisationService: LocalisationService, configServer: ConfigServer);
     /**
      * Get all offers
      * @returns IRagfairOffer array
@@ -40,12 +39,19 @@ export declare class RagfairOfferService {
     getOffersOfType(templateId: string): IRagfairOffer[];
     addOffer(offer: IRagfairOffer): void;
     addOfferToExpired(staleOffer: IRagfairOffer): void;
+    /**
+     * Get total count of current expired offers
+     * @returns Number of expired offers
+     */
     getExpiredOfferCount(): number;
     /**
-     * Get an array of expired items not yet processed into new offers
-     * @returns items that need to be turned into offers
+     * Get an array of arrays of expired offer items + children
+     * @returns Expired offer assorts
      */
-    getExpiredOfferItems(): Item[];
+    getExpiredOfferAssorts(): Item[][];
+    /**
+     * Clear out internal expiredOffers dictionary of all items
+     */
     resetExpiredOffers(): void;
     /**
      * Does the offer exist on the ragfair

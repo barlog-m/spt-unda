@@ -15,9 +15,12 @@ import { SaveServer } from "@spt-aki/servers/SaveServer";
 import { LocalisationService } from "@spt-aki/services/LocalisationService";
 import { ProfileFixerService } from "@spt-aki/services/ProfileFixerService";
 import { JsonUtil } from "@spt-aki/utils/JsonUtil";
+import { TimeUtil } from "@spt-aki/utils/TimeUtil";
+import { RandomUtil } from "@spt-aki/utils/RandomUtil";
 import { ProfileHelper } from "./ProfileHelper";
 export declare class InRaidHelper {
     protected logger: ILogger;
+    protected timeUtil: TimeUtil;
     protected saveServer: SaveServer;
     protected jsonUtil: JsonUtil;
     protected itemHelper: ItemHelper;
@@ -29,9 +32,10 @@ export declare class InRaidHelper {
     protected localisationService: LocalisationService;
     protected profileFixerService: ProfileFixerService;
     protected configServer: ConfigServer;
+    protected randomUtil: RandomUtil;
     protected lostOnDeathConfig: ILostOnDeathConfig;
     protected inRaidConfig: IInRaidConfig;
-    constructor(logger: ILogger, saveServer: SaveServer, jsonUtil: JsonUtil, itemHelper: ItemHelper, databaseServer: DatabaseServer, inventoryHelper: InventoryHelper, profileHelper: ProfileHelper, questHelper: QuestHelper, paymentHelper: PaymentHelper, localisationService: LocalisationService, profileFixerService: ProfileFixerService, configServer: ConfigServer);
+    constructor(logger: ILogger, timeUtil: TimeUtil, saveServer: SaveServer, jsonUtil: JsonUtil, itemHelper: ItemHelper, databaseServer: DatabaseServer, inventoryHelper: InventoryHelper, profileHelper: ProfileHelper, questHelper: QuestHelper, paymentHelper: PaymentHelper, localisationService: LocalisationService, profileFixerService: ProfileFixerService, configServer: ConfigServer, randomUtil: RandomUtil);
     /**
      * Lookup quest item loss from lostOnDeath config
      * @returns True if items should be removed from inventory
@@ -60,7 +64,6 @@ export declare class InRaidHelper {
      * Reset a profile to a baseline, used post-raid
      * Reset points earned during session property
      * Increment exp
-     * Remove Labs keycard
      * @param profileData Profile to update
      * @param saveProgressRequest post raid save data request data
      * @param sessionID Session id
@@ -73,7 +76,7 @@ export declare class InRaidHelper {
      */
     protected resetSkillPointsEarnedDuringRaid(profile: IPmcData): void;
     /** Check counters are correct in profile */
-    protected validateBackendCounters(saveProgressRequest: ISaveProgressRequestData, profileData: IPmcData): void;
+    protected validateTaskConditionCounters(saveProgressRequest: ISaveProgressRequestData, profileData: IPmcData): void;
     /**
      * Update various serverPMC profile values; quests/limb hp/trader standing with values post-raic
      * @param pmcData Server PMC profile
@@ -89,13 +92,13 @@ export declare class InRaidHelper {
      */
     updateScavProfileDataPostRaid(scavData: IPmcData, saveProgressRequest: ISaveProgressRequestData, sessionId: string): void;
     /**
-     * Look for quests with status = fail that were not failed pre-raid and run the failQuest() function
+     * Look for quests with a status different from what it began the raid with
      * @param sessionId Player id
      * @param pmcData Player profile
      * @param preRaidQuests Quests prior to starting raid
-     * @param postRaidProfile Profile sent by client
+     * @param postRaidProfile Profile sent by client with post-raid quests
      */
-    protected processFailedQuests(sessionId: string, pmcData: IPmcData, preRaidQuests: IQuestStatus[], postRaidProfile: IPostRaidPmcData): void;
+    protected processAlteredQuests(sessionId: string, pmcData: IPmcData, preRaidQuests: IQuestStatus[], postRaidProfile: IPostRaidPmcData): void;
     /**
      * Take body part effects from client profile and apply to server profile
      * @param saveProgressRequest post-raid request
@@ -108,6 +111,12 @@ export declare class InRaidHelper {
      * @param tradersClientProfile Client
      */
     protected applyTraderStandingAdjustments(tradersServerProfile: Record<string, TraderInfo>, tradersClientProfile: Record<string, TraderInfo>): void;
+    /**
+     * Transfer client achievements into profile
+     * @param profile Player pmc profile
+     * @param clientAchievements Achievements from client
+     */
+    protected updateProfileAchievements(profile: IPmcData, clientAchievements: Record<string, number>): void;
     /**
      * Set the SPT inraid location Profile property to 'none'
      * @param sessionID Session id

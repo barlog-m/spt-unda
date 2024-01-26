@@ -10,7 +10,6 @@ import { ILocationData } from "@spt-aki/models/spt/server/ILocations";
 import {
     ILocationBase,
     Wave,
-    WildSpawnType,
     BossLocationSpawn,
     BossSupport,
 } from "@spt-aki/models/eft/common/ILocationBase";
@@ -174,6 +173,10 @@ export class WavesGenerator {
                 )}`
             );
         }
+
+        if (config.streetsQuietRaids) {
+            this.setMaxBotPerZoneForStreets();
+        }
     }
 
     updateMaxBotsAmount(): undefined {
@@ -187,10 +190,8 @@ export class WavesGenerator {
             const location: ILocationData = locationObj;
 
             if (location.base) {
-                if (locationName === "tarkovstreets") {
-                    this.increaseMaxBotsAmountForStreets(
-                        this.generalLocationInfo["tarkovstreets"].maxBots
-                    );
+                if ((locationName === "tarkovstreets") && (config.streetsQuietRaids)) {
+                    // this.increaseMaxBotsAmountForStreets(maxBots);
                 } else if (this.smallLocations.includes(locationName)) {
                     const { maxBots, maxPlayers } =
                         this.generalLocationInfo[locationName];
@@ -402,12 +403,16 @@ export class WavesGenerator {
                         `[Unda] ${locationName}.BotMax: ${maxAssaultScavAmount}`
                     );
                 }
+                
+                const maxScavGroupSize = ((locationName === "tarkovstreets") && (config.streetsQuietRaids)) ? 3 :
+                    config.maxScavGroupSize;
 
                 this.generateAssaultWaves(
                     locationBase,
                     assaultZones,
                     locationBase.EscapeTimeLimit,
                     maxAssaultScavAmount,
+                    maxScavGroupSize,
                     currentWaveNumber
                 );
 
@@ -456,11 +461,12 @@ export class WavesGenerator {
         zones: string[],
         escapeTimeLimit: number,
         maxAssaultScavAmount: number,
+        maxScavGroupSize: number,
         currentWaveNumber: number
     ): undefined {
         const groups = this.splitMaxAmountIntoGroups(
             maxAssaultScavAmount,
-            config.maxScavGroupSize
+            maxScavGroupSize 
         );
 
         const groupsByZones = this.separateGroupsByZones(zones, groups);
@@ -555,7 +561,8 @@ export class WavesGenerator {
             const maxPlayers =
                 this.generalLocationInfo[locationName].maxPlayers;
 
-            const maxPmcAmount =
+            
+            const maxPmcAmount = ((locationName === "tarkovstreets") && (config.streetsQuietRaids)) ? minPlayers : 
                 this.randomUtil.getInt(minPlayers, maxPlayers) - 1;
             if (maxPmcAmount <= 0) {
                 this.logger.error(
@@ -681,5 +688,10 @@ export class WavesGenerator {
             [result[i], result[j]] = [result[j], result[i]];
         }
         return result;
+    }
+
+    setMaxBotPerZoneForStreets(): undefined {
+        const locationData: ILocationData = this.locations["tarkovstreets"];
+        locationData.base.MaxBotPerZone = 3;
     }
 }

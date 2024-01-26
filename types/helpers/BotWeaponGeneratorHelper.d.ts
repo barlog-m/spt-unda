@@ -69,18 +69,18 @@ export declare class BotWeaponGeneratorHelper {
      * TODO - move into BotGeneratorHelper, this is not the class for it
      * Adds an item with all its children into specified equipmentSlots, wherever it fits.
      * @param equipmentSlots Slot to add item+children into
-     * @param parentId
-     * @param parentTpl
+     * @param rootItemId Root item id to use as mod items parentid
+     * @param rootItemTplId Root itms tpl id
      * @param itemWithChildren Item to add
      * @param inventory Inventory to add item+children into
-     * @returns a `boolean` indicating item was added
+     * @returns ItemAddedResult result object
      */
-    addItemWithChildrenToEquipmentSlot(equipmentSlots: string[], parentId: string, parentTpl: string, itemWithChildren: Item[], inventory: Inventory): ItemAddedResult;
+    addItemWithChildrenToEquipmentSlot(equipmentSlots: string[], rootItemId: string, rootItemTplId: string, itemWithChildren: Item[], inventory: Inventory): ItemAddedResult;
     /**
-     * is the provided item allowed inside a container
-     * @param slot location item wants to be placed in
-     * @param itemTpl item being placed
-     * @returns true if allowed
+     * Is the provided item allowed inside a container
+     * @param slotGrid Items sub-grid we want to place item inside
+     * @param itemTpl Item tpl being placed
+     * @returns True if allowed
      */
-    protected itemAllowedInContainer(slot: Grid, itemTpl: string): boolean;
+    protected itemAllowedInContainer(slotGrid: Grid, itemTpl: string): boolean;
 }

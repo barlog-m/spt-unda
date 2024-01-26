@@ -36,4 +36,4 @@ Since PMC bots count as bots in game, mod increases MaxBots value for most maps 
 
 For small maps like Factory, Laboratory and Reserve by random value between `MaxPlayers / 2` and `MaxPlayers - 1`.
 
-And for Streets by random value between `2` and `5`.
+If option `streetsQuietRaids` set to `true` then for Streets max amount of bots does not change, max scav group size is 3 and amount of PMC always MinPlayers.
