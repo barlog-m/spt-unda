@@ -17,9 +17,13 @@ export default function registerWavesGenerator(
         "UndaWavesGeneratorUpdate",
         [
             {
-                url: "/client/match/offline/end",
-                action: (_url, _info, _sessionId, output) => {
-                    wavesGenerator.generateWaves();
+                url: "/singleplayer/settings/getRaidTime",
+                action: (_url: string, info: any, _sessionID: string, output: string) => {
+                    if (info.Side.toLowerCase() === "pmc") {
+                        wavesGenerator.generateWavesForPMCRaid();
+                    } else {
+                        wavesGenerator.generateWavesForScavRaid();
+                    }
                     return output;
                 },
             },

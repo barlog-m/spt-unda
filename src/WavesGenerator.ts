@@ -1,25 +1,28 @@
-import { inject, injectable } from "tsyringe";
+import {inject, injectable} from "tsyringe";
 
-import { ILogger } from "@spt-aki/models/spt/utils/ILogger";
-import { DatabaseServer } from "@spt-aki/servers/DatabaseServer";
-import { IBotConfig } from "@spt-aki/models/spt/config/IBotConfig";
-import { IPmcConfig } from "@spt-aki/models/spt/config/IPmcConfig";
-import { ILocationConfig } from "@spt-aki/models/spt/config/ILocationConfig";
-import { IDatabaseTables } from "@spt-aki/models/spt/server/IDatabaseTables";
-import { ILocationData } from "@spt-aki/models/spt/server/ILocations";
+import {ILogger} from "@spt-aki/models/spt/utils/ILogger";
+import {DatabaseServer} from "@spt-aki/servers/DatabaseServer";
+import {IBotConfig} from "@spt-aki/models/spt/config/IBotConfig";
+import {IPmcConfig} from "@spt-aki/models/spt/config/IPmcConfig";
+import {ILocationConfig} from "@spt-aki/models/spt/config/ILocationConfig";
+import {IDatabaseTables} from "@spt-aki/models/spt/server/IDatabaseTables";
+import {ILocationData} from "@spt-aki/models/spt/server/ILocations";
 import {
     ILocationBase,
     Wave,
     BossLocationSpawn,
     BossSupport,
 } from "@spt-aki/models/eft/common/ILocationBase";
-import { RandomUtil } from "@spt-aki/utils/RandomUtil";
-import { HashUtil } from "@spt-aki/utils/HashUtil";
-import { ILocations } from "@spt-aki/models/spt/server/ILocations";
-import { ConfigServer } from "@spt-aki/servers/ConfigServer";
-import { ConfigTypes } from "@spt-aki/models/enums/ConfigTypes";
+import {RandomUtil} from "@spt-aki/utils/RandomUtil";
+import {HashUtil} from "@spt-aki/utils/HashUtil";
+import {ILocations} from "@spt-aki/models/spt/server/ILocations";
+import {ConfigServer} from "@spt-aki/servers/ConfigServer";
+import {ConfigTypes} from "@spt-aki/models/enums/ConfigTypes";
 
 import * as config from "../config/config.json";
+import {
+    CustomLocationWaveService
+} from "@spt-aki/services/CustomLocationWaveService";
 
 type ZoneGroupSize = { zoneName: string; groupSize: number };
 
@@ -67,22 +70,34 @@ export class WavesGenerator {
         @inject("RandomUtil") protected randomUtil: RandomUtil,
         @inject("DatabaseServer") protected databaseServer: DatabaseServer,
         @inject("ConfigServer")
-        protected configServer: ConfigServer
-    ) {}
+        protected configServer: ConfigServer,
+        @inject("CustomLocationWaveService")
+        protected customLocationWaveService: CustomLocationWaveService
+    ) {
+    }
 
-    public generateWaves(): undefined {
+    public generateWavesForPMCRaid(): undefined {
         this.deleteAllCustomWaves();
         this.updateMaxBotsAmount();
-        this.replacePmcBossWaves();
-        this.replaceScavWaves();
-        this.logger.info("[Unda] Bot waves generated");
+        this.replacePmcBossWaves(false);
+        this.replaceScavWaves(false);
+        this.customLocationWaveService.applyWaveChangesToAllMaps();
+        this.logger.info("[Unda] Bot waves generated for PMC raid");
+    }
+
+    public generateWavesForScavRaid(): undefined {
+        this.deleteAllCustomWaves();
+        this.replacePmcBossWaves(true);
+        this.replaceScavWaves(true);
+        this.customLocationWaveService.applyWaveChangesToAllMaps();
+        this.logger.info("[Unda] Bot waves generated for Scav raid");
     }
 
     disableAllConversionToPmc(): undefined {
         for (const botType of Object.keys(
             this.pmcConfig.convertIntoPmcChance
         )) {
-            this.pmcConfig.convertIntoPmcChance[botType] = { min: 0, max: 0 };
+            this.pmcConfig.convertIntoPmcChance[botType] = {min: 0, max: 0};
         }
 
         if (config.debug) {
@@ -100,8 +115,8 @@ export class WavesGenerator {
                 continue;
             }
 
-            this.locationConfig.customWaves.boss[locationName] = [];
-            this.locationConfig.customWaves.normal[locationName] = [];
+            this.customLocationWaveService.clearBossWavesForMap(locationName);
+            this.customLocationWaveService.clearNormalWavesForMap(locationName);
         }
 
         if (config.debug) {
@@ -193,7 +208,7 @@ export class WavesGenerator {
                 if ((locationName === "tarkovstreets") && (config.streetsQuietRaids)) {
                     // this.increaseMaxBotsAmountForStreets(maxBots);
                 } else if (this.smallLocations.includes(locationName)) {
-                    const { maxBots, maxPlayers } =
+                    const {maxBots, maxPlayers} =
                         this.generalLocationInfo[locationName];
                     this.increaseMaxBotsAmountForSmallLocation(
                         locationName,
@@ -201,7 +216,7 @@ export class WavesGenerator {
                         maxPlayers
                     );
                 } else {
-                    const { maxBots, minPlayers } =
+                    const {maxBots, minPlayers} =
                         this.generalLocationInfo[locationName];
                     this.increaseMaxBotsAmountForLargeLocation(
                         locationName,
@@ -360,8 +375,8 @@ export class WavesGenerator {
         return zones;
     }
 
-    replaceScavWaves(): undefined {
-        for (const [locationName, locationObj] of Object.entries(
+    replaceScavWaves(isScavRaid: boolean): undefined {
+        for (const [locationName, locationData] of Object.entries(
             this.locations
         )) {
             if (this.locationsToIgnore.includes(locationName)) {
@@ -372,58 +387,61 @@ export class WavesGenerator {
                 continue;
             }
 
-            const location: ILocationData = locationObj;
+            const generalLocationInfo = this.generalLocationInfo[locationName];
 
-            if (location.base) {
-                const locationBase: ILocationBase = location.base;
+            this.replaceScavWavesForLocation(locationName, locationData, generalLocationInfo, isScavRaid)
+        }
+    }
 
-                const marksmanZones =
-                    this.generalLocationInfo[locationName].marksmanZones;
-                const assaultZones = [
-                    ...this.generalLocationInfo[locationName].zones,
-                ];
-                this.cleanWaves(locationBase);
+    replaceScavWavesForLocation(locationName: string, locationData: ILocationData, generalLocationInfo: GeneralLocationInfo, isScavRaid: boolean): undefined {
+        const locationBase: ILocationBase = locationData.base;
 
-                let maxMarksmanGroupSize = 1;
-                if (locationName === "shoreline") {
-                    maxMarksmanGroupSize = 2;
-                }
+        const marksmanZones =
+            this.generalLocationInfo[locationName].marksmanZones;
+        const assaultZones = [
+            ...this.generalLocationInfo[locationName].zones,
+        ];
+        this.cleanWaves(locationBase);
 
-                const currentWaveNumber = this.generateMarksmanWaves(
-                    locationBase,
-                    marksmanZones,
-                    maxMarksmanGroupSize
-                );
+        let maxMarksmanGroupSize = 1;
+        if (locationName === "shoreline") {
+            maxMarksmanGroupSize = 2;
+        }
 
-                const maxAssaultScavAmount =
-                    this.generalLocationInfo[locationName].maxScavs;
+        const currentWaveNumber = this.generateMarksmanWaves(
+            locationBase,
+            marksmanZones,
+            maxMarksmanGroupSize
+        );
 
-                if (maxAssaultScavAmount <= 0) {
-                    this.logger.error(
-                        `[Unda] ${locationName}.BotMax: ${maxAssaultScavAmount}`
-                    );
-                }
-                
-                const maxScavGroupSize = ((locationName === "tarkovstreets") && (config.streetsQuietRaids)) ? 3 :
-                    config.maxScavGroupSize;
+        const maxAssaultScavAmount =
+            this.generalLocationInfo[locationName].maxScavs;
 
-                this.generateAssaultWaves(
-                    locationBase,
-                    assaultZones,
-                    locationBase.EscapeTimeLimit,
-                    maxAssaultScavAmount,
-                    maxScavGroupSize,
-                    currentWaveNumber
-                );
+        if (maxAssaultScavAmount <= 0) {
+            this.logger.error(
+                `[Unda] ${locationName}.BotMax: ${maxAssaultScavAmount}`
+            );
+        }
 
-                if (config.debug) {
-                    this.logger.info(
-                        `[Unda] ${locationName}.waves: ${JSON.stringify(
-                            locationBase.waves
-                        )}`
-                    );
-                }
-            }
+        const maxScavGroupSize = ((locationName === "tarkovstreets") && (config.streetsQuietRaids)) ? 3 :
+            config.maxScavGroupSize;
+
+        this.generateAssaultWaves(
+            locationBase,
+            assaultZones,
+            locationBase.EscapeTimeLimit,
+            maxAssaultScavAmount,
+            maxScavGroupSize,
+            currentWaveNumber,
+            isScavRaid
+        );
+
+        if (config.debug) {
+            this.logger.info(
+                `[Unda] ${locationName}.waves: ${JSON.stringify(
+                    locationBase.waves
+                )}`
+            );
         }
     }
 
@@ -462,11 +480,12 @@ export class WavesGenerator {
         escapeTimeLimit: number,
         maxAssaultScavAmount: number,
         maxScavGroupSize: number,
-        currentWaveNumber: number
+        currentWaveNumber: number,
+        isScavRaid: boolean
     ): undefined {
         const groups = this.splitMaxAmountIntoGroups(
             maxAssaultScavAmount,
-            maxScavGroupSize 
+            maxScavGroupSize
         );
 
         const groupsByZones = this.separateGroupsByZones(zones, groups);
@@ -475,29 +494,33 @@ export class WavesGenerator {
         const lastWaveTimeMin = Math.ceil((escapeTimeLimit * 60) / 2);
         const middleWaveTimeMin = Math.ceil(lastWaveTimeMin / 2);
 
+        const firstWaveDifficulty = (isScavRaid) ? "hard" : "normal";
+        
         this.createAssaultWaves(
             groupsByZones,
             locationBase,
-            "normal",
+            firstWaveDifficulty,
             firstWaveTimeMin,
             currentWaveNumber
         );
 
-        this.createAssaultWaves(
-            groupsByZones,
-            locationBase,
-            "normal",
-            middleWaveTimeMin,
-            currentWaveNumber
-        );
+        if (!isScavRaid) {
+            this.createAssaultWaves(
+                groupsByZones,
+                locationBase,
+                "normal",
+                middleWaveTimeMin,
+                currentWaveNumber
+            );
 
-        this.createAssaultWaves(
-            groupsByZones,
-            locationBase,
-            "hard",
-            lastWaveTimeMin,
-            currentWaveNumber
-        );
+            this.createAssaultWaves(
+                groupsByZones,
+                locationBase,
+                "hard",
+                lastWaveTimeMin,
+                currentWaveNumber
+            );
+        }
     }
 
     createAssaultWaves(
@@ -550,55 +573,70 @@ export class WavesGenerator {
         };
     }
 
-    replacePmcBossWaves(): undefined {
+    replacePmcBossWaves(isScavRaid: boolean): undefined {
         for (const locationName of Object.keys(this.locations)) {
             if (this.locationsToIgnore.includes(locationName)) {
                 continue;
             }
 
-            const minPlayers =
-                this.generalLocationInfo[locationName].minPlayers;
-            const maxPlayers =
-                this.generalLocationInfo[locationName].maxPlayers;
+            const generalLocationInfo = this.generalLocationInfo[locationName];
 
-            
-            const maxPmcAmount = ((locationName === "tarkovstreets") && (config.streetsQuietRaids)) ? minPlayers : 
-                this.randomUtil.getInt(minPlayers, maxPlayers) - 1;
-            if (maxPmcAmount <= 0) {
-                this.logger.error(
-                    `[Unda] ${locationName}.maxPlayers: ${maxPmcAmount}`
-                );
+            if (isScavRaid) {
+                generalLocationInfo.minPlayers = Math.floor(generalLocationInfo.minPlayers / 2);
+                generalLocationInfo.maxPlayers = generalLocationInfo.minPlayers;
             }
 
-            const groups = this.splitMaxAmountIntoGroups(
-                maxPmcAmount,
-                config.maxPmcGroupSize
+            this.replacePmcBossWavesForLocation(
+                locationName,
+                generalLocationInfo
             );
+        }
+    }
 
-            const zones = [...this.generalLocationInfo[locationName].zones];
+    replacePmcBossWavesForLocation(locationName: string,
+                                   generalLocationInfo: GeneralLocationInfo): undefined {
+        const minPlayers =
+            generalLocationInfo.minPlayers;
+        const maxPlayers =
+            generalLocationInfo.maxPlayers;
 
-            const groupsByZones: ZoneGroupSize[] = this.separateGroupsByZones(
-                zones,
-                groups
+        const maxPmcAmount = ((locationName === "tarkovstreets") && (config.streetsQuietRaids)) ? minPlayers :
+            this.randomUtil.getInt(minPlayers, maxPlayers) - 1;
+        if (maxPmcAmount <= 0) {
+            this.logger.error(
+                `[Unda] ${locationName}.maxPlayers: ${maxPmcAmount}`
             );
+        }
 
-            for (const groupByZone of groupsByZones) {
-                this.locationConfig.customWaves.boss[locationName].push(
-                    this.generatePmcAsBoss(
-                        groupByZone.groupSize,
-                        config.pmcBotDifficulty,
-                        groupByZone.zoneName
-                    )
-                );
-            }
+        const groups = this.splitMaxAmountIntoGroups(
+            maxPmcAmount,
+            config.maxPmcGroupSize
+        );
+        console.log(groups);
 
-            if (config.debug) {
-                this.logger.info(
-                    `[Unda] locationConfig.customWaves.boss[${locationName}]: ${JSON.stringify(
-                        this.locationConfig.customWaves.boss[locationName]
-                    )}`
-                );
-            }
+        const zones = [...generalLocationInfo.zones];
+
+        const groupsByZones: ZoneGroupSize[] = this.separateGroupsByZones(
+            zones,
+            groups
+        );
+
+        for (const groupByZone of groupsByZones) {
+            this.customLocationWaveService.addBossWaveToMap(locationName,
+                this.generatePmcAsBoss(
+                    groupByZone.groupSize,
+                    config.pmcBotDifficulty,
+                    groupByZone.zoneName
+                )
+            )
+        }
+
+        if (config.debug) {
+            this.logger.info(
+                `[Unda] locationConfig.customWaves.boss[${locationName}]: ${JSON.stringify(
+                    this.locationConfig.customWaves.boss[locationName]
+                )}`
+            );
         }
     }
 
