@@ -53,24 +53,24 @@ export class WavesGenerator {
     ];
 
     readonly streetsAllZones: string[] = [
-        "ZoneSW01",
+        "ZoneCarShowroom",
+        "ZoneCard1",
+        "ZoneCinema",
+        "ZoneColumn",
+        "ZoneConcordiaParking",
+        "ZoneConcordia_1",
+        "ZoneConcordia_2",
+        "ZoneConstruction",
         "ZoneFactory",
         "ZoneHotel_1",
         "ZoneHotel_2",
-        "ZoneConcordia_1",
-        "ZoneConstruction",
-        "ZoneStilo",
-        "ZoneConcordiaParking",
-        "ZoneSnipeCinema",
-        "ZoneSnipeStilo",
-        "ZoneSnipeBuilding",
-        "ZoneSnipeSW01",
-        "ZoneCinema",
-        "ZoneConcordia_2",
-        "ZoneColumn",
         "ZoneSW00",
-        "ZoneCarShowroom",
-        "ZoneCard1"
+        "ZoneSW01",
+        "ZoneStilo",
+        "ZoneSnipeBuilding",
+        "ZoneSnipeCinema",
+        "ZoneSnipeSW01",
+        "ZoneSnipeStilo"
     ]
 
     private databaseTables: IDatabaseTables;
@@ -157,40 +157,42 @@ export class WavesGenerator {
                 continue;
             }
 
-            const location: ILocationData = locationObj;
-
-            if (location.base) {
-                const marksmanZones = (locationName === "tarkovstreets") ?
-                    this.getLocationMarksmanZonesNew(location.base) :
-                    this.getLocationMarksmanZones(location.base);
-
-                const zones = (locationName === "tarkovstreets") ?
-                    this.getLocationZonesNew(location.base) :
-                    this.getLocationZones(locationName, location.base);
-
-                const minPlayers = this.getLocationMinPlayers(location.base);
-
-                const maxPlayers = ((locationName === "tarkovstreets") && (config.streetsQuietRaids)) ? minPlayers :
-                    this.getLocationMaxPlayers(location.base);
-
-                const maxMarksmans = this.getLocationMaxMarksmans(
-                    locationName,
-                    marksmanZones.length
-                );
-
-                const maxBots = this.getLocationMaxBots(locationName, location.base);
-                const maxScavs = maxBots - maxMarksmans;
-
-                this.generalLocationInfo[locationName] = {
-                    marksmanZones,
-                    zones,
-                    maxBots,
-                    minPlayers,
-                    maxPlayers,
-                    maxMarksmans,
-                    maxScavs,
-                };
+            const locationData: ILocationData = locationObj;
+            
+            if (locationName === "tarkovstreets") {
+                this.makeAllZonesOpenForStreets(locationData);
             }
+
+            const marksmanZones = (locationName === "tarkovstreets") ?
+                this.getLocationMarksmanZonesNew(locationData.base) :
+                this.getLocationMarksmanZones(locationData.base);
+
+            const zones = (locationName === "tarkovstreets") ?
+                this.getLocationZonesNew(locationData.base) :
+                this.getLocationZones(locationName, locationData.base);
+
+            const minPlayers = this.getLocationMinPlayers(locationData.base);
+
+            const maxPlayers = ((locationName === "tarkovstreets") && (config.streetsQuietRaids)) ? minPlayers :
+                this.getLocationMaxPlayers(locationData.base);
+
+            const maxMarksmans = this.getLocationMaxMarksmans(
+                locationName,
+                marksmanZones.length
+            );
+
+            const maxBots = this.getLocationMaxBots(locationName, locationData.base);
+            const maxScavs = maxBots - maxMarksmans;
+
+            this.generalLocationInfo[locationName] = {
+                marksmanZones,
+                zones,
+                maxBots,
+                minPlayers,
+                maxPlayers,
+                maxMarksmans,
+                maxScavs,
+            };
         }
 
         if (config.debug) {
@@ -724,5 +726,9 @@ export class WavesGenerator {
     setMaxBotPerZoneForStreets(): undefined {
         const locationData: ILocationData = this.locations["tarkovstreets"];
         locationData.base.MaxBotPerZone = 3;
+    }
+
+    makeAllZonesOpenForStreets(locationData: ILocationData): undefined {
+        locationData.base.OpenZones = this.streetsAllZones.join(",");
     }
 }
