@@ -6,16 +6,16 @@ import {IBotConfig} from "@spt-aki/models/spt/config/IBotConfig";
 import {IPmcConfig} from "@spt-aki/models/spt/config/IPmcConfig";
 import {ILocationConfig} from "@spt-aki/models/spt/config/ILocationConfig";
 import {IDatabaseTables} from "@spt-aki/models/spt/server/IDatabaseTables";
-import {ILocationData} from "@spt-aki/models/spt/server/ILocations";
+import {ILocationData, ILocations} from "@spt-aki/models/spt/server/ILocations";
 import {
-    ILocationBase,
-    Wave,
     BossLocationSpawn,
     BossSupport,
+    ILocationBase,
+    Wave,
+    WildSpawnType,
 } from "@spt-aki/models/eft/common/ILocationBase";
 import {RandomUtil} from "@spt-aki/utils/RandomUtil";
 import {HashUtil} from "@spt-aki/utils/HashUtil";
-import {ILocations} from "@spt-aki/models/spt/server/ILocations";
 import {ConfigServer} from "@spt-aki/servers/ConfigServer";
 import {ConfigTypes} from "@spt-aki/models/enums/ConfigTypes";
 
@@ -469,7 +469,7 @@ export class WavesGenerator {
         zones.forEach((zone) => {
             locationBase.waves.push(
                 this.generateWave(
-                    "marksman",
+                    WildSpawnType.MARKSMAN,
                     zone,
                     "hard",
                     num++,
@@ -542,7 +542,7 @@ export class WavesGenerator {
 
         for (const zoneByBroup of groupsByZones) {
             const wave = this.generateWave(
-                "assault",
+                WildSpawnType.ASSAULT,
                 zoneByBroup.zoneName,
                 difficulty,
                 currentWaveNumber++,
@@ -556,7 +556,7 @@ export class WavesGenerator {
     }
 
     generateWave(
-        botType: string,
+        botType: WildSpawnType,
         zoneName: string,
         difficulty: string,
         number: number,
