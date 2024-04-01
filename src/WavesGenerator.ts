@@ -6,7 +6,8 @@ import {IBotConfig} from "@spt-aki/models/spt/config/IBotConfig";
 import {IPmcConfig} from "@spt-aki/models/spt/config/IPmcConfig";
 import {ILocationConfig} from "@spt-aki/models/spt/config/ILocationConfig";
 import {IDatabaseTables} from "@spt-aki/models/spt/server/IDatabaseTables";
-import {ILocationData, ILocations} from "@spt-aki/models/spt/server/ILocations";
+import {ILocations} from "@spt-aki/models/spt/server/ILocations";
+import {ILocation} from "@spt-aki/models/eft/common/ILocation";
 import {
     BossLocationSpawn,
     BossSupport,
@@ -157,7 +158,7 @@ export class WavesGenerator {
                 continue;
             }
 
-            const locationData: ILocationData = locationObj;
+            const locationData: ILocation = locationObj;
             
             if (locationName === "tarkovstreets") {
                 this.makeAllZonesOpenForStreets(locationData);
@@ -216,7 +217,7 @@ export class WavesGenerator {
                 continue;
             }
 
-            const location: ILocationData = locationObj;
+            const location: ILocation = locationObj;
 
             if (location.base) {
                 if ((locationName === "tarkovstreets") && (config.streetsQuietRaids)) {
@@ -288,7 +289,7 @@ export class WavesGenerator {
         maxBots: number,
         term: number
     ): number {
-        const locationData: ILocationData = this.locations[locationName];
+        const locationData: ILocation = this.locations[locationName];
         const newMaxBotsValue = maxBots + term;
         locationData.base.BotMax = newMaxBotsValue;
         this.botConfig.maxBotCap[locationName] = newMaxBotsValue;
@@ -400,7 +401,7 @@ export class WavesGenerator {
                 continue;
             }
 
-            const location: ILocationData = locationObj;
+            const location: ILocation = locationObj;
 
             if (location.base) {
                 const locationBase: ILocationBase = location.base;
@@ -724,11 +725,11 @@ export class WavesGenerator {
     }
 
     setMaxBotPerZoneForStreets(): undefined {
-        const locationData: ILocationData = this.locations["tarkovstreets"];
+        const locationData: ILocation = this.locations["tarkovstreets"];
         locationData.base.MaxBotPerZone = 3;
     }
 
-    makeAllZonesOpenForStreets(locationData: ILocationData): undefined {
+    makeAllZonesOpenForStreets(locationData: ILocation): undefined {
         locationData.base.OpenZones = this.streetsAllZones.join(",");
     }
 }
