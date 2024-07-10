@@ -1,7 +1,9 @@
-import { DependencyContainer } from "tsyringe";
-import { StaticRouterModService } from "@spt-aki/services/mod/staticRouter/StaticRouterModService";
-import { ILogger } from "@spt-aki/models/spt/utils/ILogger";
-import { WavesGenerator } from "./WavesGenerator";
+import {DependencyContainer} from "tsyringe";
+import {
+    StaticRouterModService
+} from "@spt/services/mod/staticRouter/StaticRouterModService";
+import {ILogger} from "@spt/models/spt/utils/ILogger";
+import {WavesGenerator} from "./WavesGenerator";
 
 export default function registerWavesGenerator(
     container: DependencyContainer
@@ -19,12 +21,14 @@ export default function registerWavesGenerator(
             {
                 url: "/client/match/offline/end",
                 action: (_url, _info, _sessionId, output) => {
-                    wavesGenerator.generateWaves();
-                    return output;
+                    return new Promise((resolve) => {
+                        wavesGenerator.generateWaves();
+                        resolve(output);
+                    })
                 },
             },
         ],
-        "aki"
+        "spt"
     );
 
     logger.info("[Unda] Waves generator registered");

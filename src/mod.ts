@@ -1,15 +1,16 @@
-import { DependencyContainer, Lifecycle } from "tsyringe";
+import {DependencyContainer, Lifecycle} from "tsyringe";
 
-import { IPreAkiLoadMod } from "@spt-aki/models/external/IPreAkiLoadMod";
-import { IPostAkiLoadMod } from "@spt-aki/models/external/IPostAkiLoadMod";
+import {IPreSptLoadMod} from "@spt/models/external/IPreSptLoadMod";
+import {IPostSptLoadMod} from "@spt/models/external/IPostSptLoadMod";
 
-import { WavesGenerator } from "./WavesGenerator";
+import {WavesGenerator} from "./WavesGenerator";
 import registerWavesGenerator from "./registerWavesGenerator";
 
-export class Unda implements IPreAkiLoadMod, IPostAkiLoadMod {
-    constructor() {}
+export class Unda implements IPreSptLoadMod, IPostSptLoadMod {
+    constructor() {
+    }
 
-    public preAkiLoad(container: DependencyContainer): void {
+    preSptLoad(container: DependencyContainer): void {
         container.register<WavesGenerator>(
             "UndaWavesGenerator",
             WavesGenerator,
@@ -21,7 +22,7 @@ export class Unda implements IPreAkiLoadMod, IPostAkiLoadMod {
         registerWavesGenerator(container);
     }
 
-    postAkiLoad(container: DependencyContainer): void {
+    postSptLoad(container: DependencyContainer): void {
         const wavesGenerator =
             container.resolve<WavesGenerator>("UndaWavesGenerator");
         wavesGenerator.fillInitialData();
@@ -29,4 +30,4 @@ export class Unda implements IPreAkiLoadMod, IPostAkiLoadMod {
     }
 }
 
-module.exports = { mod: new Unda() };
+module.exports = {mod: new Unda()};

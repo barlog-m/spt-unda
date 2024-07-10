@@ -1,24 +1,24 @@
 import {inject, injectable} from "tsyringe";
 
-import {ILogger} from "@spt-aki/models/spt/utils/ILogger";
-import {DatabaseServer} from "@spt-aki/servers/DatabaseServer";
-import {IBotConfig} from "@spt-aki/models/spt/config/IBotConfig";
-import {IPmcConfig} from "@spt-aki/models/spt/config/IPmcConfig";
-import {ILocationConfig} from "@spt-aki/models/spt/config/ILocationConfig";
-import {IDatabaseTables} from "@spt-aki/models/spt/server/IDatabaseTables";
-import {ILocations} from "@spt-aki/models/spt/server/ILocations";
-import {ILocation} from "@spt-aki/models/eft/common/ILocation";
+import {ILogger} from "@spt/models/spt/utils/ILogger";
+import {DatabaseServer} from "@spt/servers/DatabaseServer";
+import {IBotConfig} from "@spt/models/spt/config/IBotConfig";
+import {IPmcConfig} from "@spt/models/spt/config/IPmcConfig";
+import {ILocationConfig} from "@spt/models/spt/config/ILocationConfig";
+import {IDatabaseTables} from "@spt/models/spt/server/IDatabaseTables";
+import {ILocations} from "@spt/models/spt/server/ILocations";
+import {ILocation} from "@spt/models/eft/common/ILocation";
 import {
     BossLocationSpawn,
     BossSupport,
     ILocationBase,
     Wave,
     WildSpawnType,
-} from "@spt-aki/models/eft/common/ILocationBase";
-import {RandomUtil} from "@spt-aki/utils/RandomUtil";
-import {HashUtil} from "@spt-aki/utils/HashUtil";
-import {ConfigServer} from "@spt-aki/servers/ConfigServer";
-import {ConfigTypes} from "@spt-aki/models/enums/ConfigTypes";
+} from "@spt/models/eft/common/ILocationBase";
+import {RandomUtil} from "@spt/utils/RandomUtil";
+import {HashUtil} from "@spt/utils/HashUtil";
+import {ConfigServer} from "@spt/servers/ConfigServer";
+import {ConfigTypes} from "@spt/models/enums/ConfigTypes";
 
 import * as config from "../config/config.json";
 
@@ -44,13 +44,6 @@ export class WavesGenerator {
         "suburbs",
         "terminal",
         "town",
-    ];
-
-    readonly smallLocations: string[] = [
-        "factory4_day",
-        "factory4_night",
-        "laboratory",
-        "rezervbase",
     ];
 
     readonly streetsAllZones: string[] = [
@@ -95,7 +88,6 @@ export class WavesGenerator {
 
     public generateWaves(): undefined {
         this.deleteAllCustomWaves();
-        this.updateMaxBotsAmount();
         this.replacePmcBossWaves();
         this.replaceScavWaves();
         this.logger.info("[Unda] Bot waves generated");
@@ -159,7 +151,7 @@ export class WavesGenerator {
             }
 
             const locationData: ILocation = locationObj;
-            
+
             if (locationName === "tarkovstreets") {
                 this.makeAllZonesOpenForStreets(locationData);
             }
@@ -207,99 +199,6 @@ export class WavesGenerator {
         if (config.streetsQuietRaids) {
             this.setMaxBotPerZoneForStreets();
         }
-    }
-
-    updateMaxBotsAmount(): undefined {
-        for (const [locationName, locationObj] of Object.entries(
-            this.locations
-        )) {
-            if (this.locationsToIgnore.includes(locationName)) {
-                continue;
-            }
-
-            const location: ILocation = locationObj;
-
-            if (location.base) {
-                if ((locationName === "tarkovstreets") && (config.streetsQuietRaids)) {
-                    // this.increaseMaxBotsAmountForStreets(maxBots);
-                } else if (this.smallLocations.includes(locationName)) {
-                    const {maxBots, maxPlayers} =
-                        this.generalLocationInfo[locationName];
-                    this.increaseMaxBotsAmountForSmallLocation(
-                        locationName,
-                        maxBots,
-                        maxPlayers
-                    );
-                } else {
-                    const {maxBots, minPlayers} =
-                        this.generalLocationInfo[locationName];
-                    this.increaseMaxBotsAmountForLargeLocation(
-                        locationName,
-                        maxBots,
-                        minPlayers
-                    );
-                }
-            }
-        }
-    }
-
-    increaseMaxBotsAmountForLargeLocation(
-        locationName: string,
-        maxBots: number,
-        minPlayers: number
-    ): number {
-        const term = this.randomUtil.getInt(
-            Math.round(minPlayers / 2),
-            minPlayers + 1
-        );
-        return this.increaseMaxBotsAmountForLocation(
-            locationName,
-            maxBots,
-            term
-        );
-    }
-
-    increaseMaxBotsAmountForSmallLocation(
-        locationName: string,
-        maxBots: number,
-        maxPlayers: number
-    ): number {
-        const term = this.randomUtil.getInt(
-            Math.round(maxPlayers / 2),
-            maxPlayers - 1
-        );
-        return this.increaseMaxBotsAmountForLocation(
-            locationName,
-            maxBots,
-            term
-        );
-    }
-
-    increaseMaxBotsAmountForStreets(maxBots: number): number {
-        const term = this.randomUtil.getInt(2, 5);
-        return this.increaseMaxBotsAmountForLocation(
-            "tarkovstreets",
-            maxBots,
-            term
-        );
-    }
-
-    increaseMaxBotsAmountForLocation(
-        locationName: string,
-        maxBots: number,
-        term: number
-    ): number {
-        const locationData: ILocation = this.locations[locationName];
-        const newMaxBotsValue = maxBots + term;
-        locationData.base.BotMax = newMaxBotsValue;
-        this.botConfig.maxBotCap[locationName] = newMaxBotsValue;
-
-        if (config.debug) {
-            this.logger.info(
-                `[Unda] ${locationName}.BotMax: ${maxBots} -> ${newMaxBotsValue}`
-            );
-        }
-        return newMaxBotsValue;
     }
 
     getLocationMinPlayers(locationBase: ILocationBase): number {
@@ -664,7 +563,7 @@ export class WavesGenerator {
         const supports: BossSupport[] = [];
         let escortAmount = "0";
 
-        const type = this.randomUtil.getBool() ? "sptBear" : "sptUsec";
+        const type = this.randomUtil.getBool() ? "pmcBEAR" : "pmcUSEC";
 
         if (groupSize > 1) {
             escortAmount = `${groupSize - 1}`;
@@ -677,20 +576,23 @@ export class WavesGenerator {
         }
 
         return {
-            sptId: this.hashUtil.generate(),
-            BossName: type,
             BossChance: 100,
-            BossZone: zone,
-            BossPlayer: true,
             BossDifficult: difficulty,
-            BossEscortType: type,
-            BossEscortDifficult: difficulty,
             BossEscortAmount: escortAmount,
+            BossEscortDifficult: difficulty,
+            BossEscortType: type,
+            BossName: type,
+            BossPlayer: true,
+            BossZone: zone,
+            RandomTimeSpawn: false,
             Time: -1,
             TriggerId: "",
             TriggerName: "",
+            ForceSpawn: true,
+            IgnoreMaxBots: true,
             Supports: supports,
-            RandomTimeSpawn: false,
+            sptId: this.hashUtil.generate(),
+            spawnMode: ["regular", "pve"]
         };
     }
 
