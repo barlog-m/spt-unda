@@ -32,4 +32,8 @@ Scavs spawns in 3 general waves:
 
 **PMC and Scavs waves and groups generate after each raid from scratch.**
 
-If option `streetsQuietRaids` set to `true` then for Streets max scav group size set to 3.
+Since PMC bots count as bots in game, mod increases MaxBots value for most maps by random value between `MinPlayers / 2` and `MinPlayers + 1`.
+
+For small maps like Factory, Laboratory and Reserve by random value between `MaxPlayers / 2` and `MaxPlayers - 1`.
+
+If option `streetsQuietRaids` set to `true` then for Streets max amount of bots does not change, max scav group size is 3 and amount of PMC always MinPlayers.
