@@ -94,6 +94,7 @@ export class WavesGenerator {
     }
 
     public generateWaves(): undefined {
+        this.deleteAllPmcBosses();
         this.deleteAllCustomWaves();
         this.updateMaxBotsAmount();
         this.replacePmcBossWaves();
@@ -102,10 +103,14 @@ export class WavesGenerator {
     }
 
     disableAllConversionToPmc(): undefined {
-        for (const botType of Object.keys(
+        for (const map of Object.keys(
             this.pmcConfig.convertIntoPmcChance
         )) {
-            this.pmcConfig.convertIntoPmcChance[botType] = {min: 0, max: 0};
+            for (const botType of Object.keys(
+                this.pmcConfig.convertIntoPmcChance[map]
+            )) {
+                this.pmcConfig.convertIntoPmcChance[map][botType] = {min: 0, max: 0};
+            }
         }
 
         if (config.debug) {
@@ -117,6 +122,20 @@ export class WavesGenerator {
         }
     }
 
+    deleteAllPmcBosses(): undefined {
+        for (const locationName of Object.keys(this.locations)) {
+            if (this.locationsToIgnore.includes(locationName)) {
+                continue;
+            }
+
+            const filteredArray = this.locations[locationName].base.BossLocationSpawn.filter(
+                bossLocationSpawn => bossLocationSpawn.BossName !== "pmcBEAR" || bossLocationSpawn.BossName !== "pmcUSEC"
+            )
+
+            this.locations[locationName].base.BossLocationSpawn = filteredArray;
+        }
+    }
+    
     deleteAllCustomWaves(): undefined {
         for (const locationName of Object.keys(this.locations)) {
             if (this.locationsToIgnore.includes(locationName)) {
@@ -579,6 +598,7 @@ export class WavesGenerator {
             slots_max: slotsMax,
             time_min: timeMin,
             time_max: timeMax,
+            SpawnMode: ["regular", "pve"]
         };
     }
 
