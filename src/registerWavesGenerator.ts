@@ -19,7 +19,7 @@ export default function registerWavesGenerator(
         "UndaWavesGeneratorUpdate",
         [
             {
-                url: "/client/match/offline/end",
+                url: "/client/match/local/end",
                 action: (_url, _info, _sessionId, output) => {
                     return new Promise((resolve) => {
                         wavesGenerator.generateWaves();

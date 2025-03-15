@@ -9,10 +9,10 @@ import {IDatabaseTables} from "@spt/models/spt/server/IDatabaseTables";
 import {ILocations} from "@spt/models/spt/server/ILocations";
 import {ILocation} from "@spt/models/eft/common/ILocation";
 import {
-    BossLocationSpawn,
-    BossSupport,
+    IBossLocationSpawn,
+    IBossSupport,
     ILocationBase,
-    Wave,
+    IWave,
     WildSpawnType,
 } from "@spt/models/eft/common/ILocationBase";
 import {RandomUtil} from "@spt/utils/RandomUtil";
@@ -102,27 +102,11 @@ export class WavesGenerator {
         this.logger.info("[Unda] Bot waves generated");
     }
 
-    disableAllConversionToPmc(): undefined {
-        for (const map of Object.keys(
-            this.pmcConfig.convertIntoPmcChance
-        )) {
-            for (const botType of Object.keys(
-                this.pmcConfig.convertIntoPmcChance[map]
-            )) {
-                this.pmcConfig.convertIntoPmcChance[map][botType] = {min: 0, max: 0};
-            }
-        }
-
-        if (config.debug) {
-            this.logger.info(
-                `[Unda] pmcConfig.convertIntoPmcChance: ${JSON.stringify(
-                    this.pmcConfig.convertIntoPmcChance
-                )}`
-            );
-        }
-    }
-
     deleteAllPmcBosses(): undefined {
+        if (config.debug) {
+            console.log("[Unda] delete all pmc bosses");
+        }
+
         for (const locationName of Object.keys(this.locations)) {
             if (this.locationsToIgnore.includes(locationName)) {
                 continue;
@@ -167,8 +151,6 @@ export class WavesGenerator {
             ConfigTypes.LOCATION
         );
         this.locations = this.databaseTables.locations;
-
-        this.disableAllConversionToPmc();
 
         for (const [locationName, locationObj] of Object.entries(
             this.locations
@@ -360,7 +342,7 @@ export class WavesGenerator {
                 ...new Set(
                     locationBase.BossLocationSpawn.map(
                         (bz) => {
-                            if (bz.BossZone.trim().length == 0) {
+                            if (bz.BossZone.trim().length == 0 || bz.BossZone.toLowerCase().includes("gate")) {
                                 return "BotZone";
                             } else {
                                 return bz.BossZone;
@@ -584,7 +566,7 @@ export class WavesGenerator {
         slotsMax: number,
         timeMin: number,
         timeMax: number
-    ): Wave {
+    ): IWave {
         const spawnPoint = zoneName.trim().length == 0 ? "BotZone" : zoneName;
 
         return {
@@ -598,7 +580,7 @@ export class WavesGenerator {
             slots_max: slotsMax,
             time_min: timeMin,
             time_max: timeMax,
-            SpawnMode: ["regular", "pve"]
+            SpawnMode: ["pve"]
         };
     }
 
@@ -680,8 +662,8 @@ export class WavesGenerator {
         groupSize: number,
         difficulty: string,
         zone: string
-    ): BossLocationSpawn {
-        const supports: BossSupport[] = [];
+    ): IBossLocationSpawn {
+        const supports: IBossSupport[] = [];
         let escortAmount = "0";
 
         const type = this.randomUtil.getBool() ? "pmcBEAR" : "pmcUSEC";
