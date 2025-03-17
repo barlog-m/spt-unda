@@ -409,9 +409,23 @@ export class WavesGenerator {
 
                 const marksmanZones =
                     this.generalLocationInfo[locationName].marksmanZones;
+
                 const assaultZones = [
                     ...this.generalLocationInfo[locationName].zones,
                 ];
+
+                if (locationName === "rezervbase") {
+                    // for Rezerv zone name should be empty string
+                    assaultZones.forEach((v, i) => { assaultZones[i] = ""; });
+                } else {
+                    // replace zones with empty names with BotZone
+                    assaultZones.forEach((v, i) => {
+                        if (v.trim().length == 0) {
+                            assaultZones[i] = "BotZone";  
+                        };
+                    });
+                }
+
                 this.cleanWaves(locationBase);
 
                 let maxMarksmanGroupSize = 1;
@@ -567,12 +581,10 @@ export class WavesGenerator {
         timeMin: number,
         timeMax: number
     ): IWave {
-        const spawnPoint = zoneName.trim().length == 0 ? "BotZone" : zoneName;
-
         return {
             BotPreset: difficulty,
             BotSide: "Savage",
-            SpawnPoints: spawnPoint,
+            SpawnPoints: zoneName,
             WildSpawnType: botType,
             isPlayers: false,
             number: number,
