@@ -1,9 +1,7 @@
-import {DependencyContainer} from "tsyringe";
-import {
-    StaticRouterModService
-} from "@spt/services/mod/staticRouter/StaticRouterModService";
-import {ILogger} from "@spt/models/spt/utils/ILogger";
-import {WavesGenerator} from "./WavesGenerator";
+import { DependencyContainer } from "tsyringe";
+import { StaticRouterModService } from "@spt/services/mod/staticRouter/StaticRouterModService";
+import type { ILogger } from "@spt/models/spt/utils/ILogger";
+import { WavesGenerator } from "./WavesGenerator";
 
 export default function registerWavesGenerator(
     container: DependencyContainer
@@ -24,7 +22,7 @@ export default function registerWavesGenerator(
                     return new Promise((resolve) => {
                         wavesGenerator.generateWaves();
                         resolve(output);
-                    })
+                    });
                 },
             },
         ],

@@ -1,14 +1,13 @@
-import {DependencyContainer, Lifecycle} from "tsyringe";
+import { DependencyContainer, Lifecycle } from "tsyringe";
 
-import {IPreSptLoadMod} from "@spt/models/external/IPreSptLoadMod";
-import {IPostSptLoadMod} from "@spt/models/external/IPostSptLoadMod";
+import { IPreSptLoadMod } from "@spt/models/external/IPreSptLoadMod";
+import { IPostSptLoadMod } from "@spt/models/external/IPostSptLoadMod";
 
-import {WavesGenerator} from "./WavesGenerator";
+import { WavesGenerator } from "./WavesGenerator";
 import registerWavesGenerator from "./registerWavesGenerator";
 
 export class Unda implements IPreSptLoadMod, IPostSptLoadMod {
-    constructor() {
-    }
+    constructor() {}
 
     preSptLoad(container: DependencyContainer): void {
         container.register<WavesGenerator>(
@@ -30,4 +29,4 @@ export class Unda implements IPreSptLoadMod, IPostSptLoadMod {
     }
 }
 
-module.exports = {mod: new Unda()};
+module.exports = { mod: new Unda() };
