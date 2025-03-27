@@ -111,8 +111,9 @@ export class UndaWavesGenerator extends PmcWaveGenerator {
     }
 
     public override applyWaveChangesToMap(location: ILocationBase): void {
+        const locationId = location.Id.toLowerCase();
         this.deleteAllPmcBosses(location);
-        this.deleteAllCustomWaves(location);
+        this.deleteAllCustomWaves(locationId);
         this.updateMaxBotsAmount(location);
         this.generatePmcBossWaves(location);
         this.replaceScavWaves(location);
@@ -133,9 +134,9 @@ export class UndaWavesGenerator extends PmcWaveGenerator {
         location.BossLocationSpawn = filteredArray;
     }
 
-    deleteAllCustomWaves(location: ILocationBase): undefined {
-        this.locationConfig.customWaves.boss[location.Id] = [];
-        this.locationConfig.customWaves.normal[location.Id] = [];
+    deleteAllCustomWaves(locationId: string): undefined {
+        this.locationConfig.customWaves.boss[locationId] = [];
+        this.locationConfig.customWaves.normal[locationId] = [];
 
         if (config.debug) {
             this.logger.info(
@@ -147,11 +148,12 @@ export class UndaWavesGenerator extends PmcWaveGenerator {
     }
 
     updateMaxBotsAmount(location: ILocationBase): undefined {
-        if (location.Id === "tarkovstreets" && config.streetsQuietRaids) {
+        const locationId = location.Id.toLowerCase();
+        if (locationId === "tarkovstreets" && config.streetsQuietRaids) {
             // this.increaseMaxBotsAmountForStreets(location, maxBots);
-        } else if (this.smallLocations.includes(location.Id)) {
+        } else if (this.smallLocations.includes(locationId)) {
             const { maxBots, maxPlayers } =
-                this.generalLocationInfo[location.Id];
+                this.generalLocationInfo[locationId];
             this.increaseMaxBotsAmountForSmallLocation(
                 location,
                 maxBots,
@@ -159,7 +161,7 @@ export class UndaWavesGenerator extends PmcWaveGenerator {
             );
         } else {
             const { maxBots, minPlayers } =
-                this.generalLocationInfo[location.Id];
+                this.generalLocationInfo[locationId];
             this.increaseMaxBotsAmountForLargeLocation(
                 location,
                 maxBots,
@@ -207,11 +209,13 @@ export class UndaWavesGenerator extends PmcWaveGenerator {
     ): number {
         const newMaxBotsValue = maxBots + term;
         location.BotMax = newMaxBotsValue;
-        this.botConfig.maxBotCap[location.Id] = newMaxBotsValue;
+
+        const locationId = location.Id.toLowerCase();
+        this.botConfig.maxBotCap[locationId] = newMaxBotsValue;
 
         if (config.debug) {
             this.logger.info(
-                `[Unda] ${location.Id}.BotMax: ${maxBots} -> ${newMaxBotsValue}`
+                `[Unda] ${locationId}.BotMax: ${maxBots} -> ${newMaxBotsValue}`
             );
         }
         return newMaxBotsValue;
@@ -316,16 +320,18 @@ export class UndaWavesGenerator extends PmcWaveGenerator {
     }
 
     replaceScavWaves(location: ILocationBase): undefined {
-        if (location.Id === "laboratory") {
+        const locationId = location.Id.toLowerCase();
+
+        if (locationId === "laboratory") {
             return;
         }
 
         const marksmanZones =
-            this.generalLocationInfo[location.Id].marksmanZones;
+            this.generalLocationInfo[locationId].marksmanZones;
 
-        const assaultZones = [...this.generalLocationInfo[location.Id].zones];
+        const assaultZones = [...this.generalLocationInfo[locationId].zones];
 
-        if (location.Id === "rezervbase") {
+        if (locationId === "rezervbase") {
             // for Rezerv zone name should be empty string
             assaultZones.forEach((v, i) => {
                 assaultZones[i] = "";
@@ -342,7 +348,7 @@ export class UndaWavesGenerator extends PmcWaveGenerator {
         this.cleanWaves(location);
 
         let maxMarksmanGroupSize = 1;
-        if (location.Id === "shoreline") {
+        if (locationId === "shoreline") {
             maxMarksmanGroupSize = 2;
         }
 
@@ -353,16 +359,16 @@ export class UndaWavesGenerator extends PmcWaveGenerator {
         );
 
         const maxAssaultScavAmount =
-            this.generalLocationInfo[location.Id].maxScavs;
+            this.generalLocationInfo[locationId].maxScavs;
 
         if (maxAssaultScavAmount <= 0) {
             this.logger.error(
-                `[Unda] ${location.Id}.BotMax: ${maxAssaultScavAmount}`
+                `[Unda] ${locationId}.BotMax: ${maxAssaultScavAmount}`
             );
         }
 
         const maxScavGroupSize =
-            location.Id === "tarkovstreets" && config.streetsQuietRaids
+            locationId === "tarkovstreets" && config.streetsQuietRaids
                 ? 3
                 : config.maxScavGroupSize;
 
@@ -377,7 +383,7 @@ export class UndaWavesGenerator extends PmcWaveGenerator {
 
         if (config.debug) {
             this.logger.info(
-                `[Unda] ${location.Id}.waves: ${JSON.stringify(location.waves)}`
+                `[Unda] ${locationId}.waves: ${JSON.stringify(location.waves)}`
             );
         }
     }
@@ -412,7 +418,7 @@ export class UndaWavesGenerator extends PmcWaveGenerator {
     }
 
     generateAssaultWaves(
-        locationBase: ILocationBase,
+        location: ILocationBase,
         zones: string[],
         escapeTimeLimit: number,
         maxAssaultScavAmount: number,
@@ -427,7 +433,7 @@ export class UndaWavesGenerator extends PmcWaveGenerator {
         const groupsByZones = this.separateGroupsByZones(zones, groups);
         if (config.debug) {
             this.logger.info(
-                `[Unda] '${locationBase.Name}' scav groups ${JSON.stringify(
+                `[Unda] '${location.Id.toLowerCase()}' scav groups ${JSON.stringify(
                     groupsByZones
                 )}`
             );
@@ -439,7 +445,7 @@ export class UndaWavesGenerator extends PmcWaveGenerator {
 
         this.createAssaultWaves(
             groupsByZones,
-            locationBase,
+            location,
             "normal",
             firstWaveTimeMin,
             currentWaveNumber
@@ -447,7 +453,7 @@ export class UndaWavesGenerator extends PmcWaveGenerator {
 
         this.createAssaultWaves(
             groupsByZones,
-            locationBase,
+            location,
             "normal",
             middleWaveTimeMin,
             currentWaveNumber
@@ -455,7 +461,7 @@ export class UndaWavesGenerator extends PmcWaveGenerator {
 
         this.createAssaultWaves(
             groupsByZones,
-            locationBase,
+            location,
             "hard",
             lastWaveTimeMin,
             currentWaveNumber
@@ -512,13 +518,14 @@ export class UndaWavesGenerator extends PmcWaveGenerator {
     }
 
     generatePmcBossWaves(location: ILocationBase): undefined {
-        const minPlayers = this.generalLocationInfo[location.Id].minPlayers;
-        const maxPlayers = this.generalLocationInfo[location.Id].maxPlayers;
+        const locationId = location.Id.toLowerCase();
+        const minPlayers = this.generalLocationInfo[locationId].minPlayers;
+        const maxPlayers = this.generalLocationInfo[locationId].maxPlayers;
 
         const maxPmcAmount = this.randomUtil.getInt(minPlayers, maxPlayers) - 1;
         if (maxPmcAmount <= 0) {
             this.logger.error(
-                `[Unda] ${location.Id}.maxPlayers: ${maxPmcAmount}`
+                `[Unda] ${locationId}.maxPlayers: ${maxPmcAmount}`
             );
         }
 
@@ -527,7 +534,7 @@ export class UndaWavesGenerator extends PmcWaveGenerator {
             config.maxPmcGroupSize
         );
 
-        const zones = [...this.generalLocationInfo[location.Id].zones];
+        const zones = [...this.generalLocationInfo[locationId].zones];
 
         const groupsByZones: ZoneGroupSize[] = this.separateGroupsByZones(
             zones,
@@ -536,7 +543,7 @@ export class UndaWavesGenerator extends PmcWaveGenerator {
 
         if (config.debug) {
             this.logger.info(
-                `[Unda] '${location.Id}' PMC groups ${JSON.stringify(
+                `[Unda] '${locationId}' PMC groups ${JSON.stringify(
                     groupsByZones
                 )}`
             );
@@ -554,10 +561,8 @@ export class UndaWavesGenerator extends PmcWaveGenerator {
 
         if (config.debug) {
             this.logger.info(
-                `[Unda] locationConfig.customWaves.boss[${
-                    location.Id
-                }]: ${JSON.stringify(
-                    this.locationConfig.customWaves.boss[location.Id]
+                `[Unda] locationConfig.customWaves.boss[${locationId}]: ${JSON.stringify(
+                    this.locationConfig.customWaves.boss[locationId]
                 )}`
             );
         }
@@ -676,48 +681,48 @@ export class UndaWavesGenerator extends PmcWaveGenerator {
         );
         this.locations = this.databaseTables.locations;
 
-        for (const [locationName, locationObj] of Object.entries(
+        for (const [locationId, locationObj] of Object.entries(
             this.locations
         )) {
-            if (this.locationsToIgnore.includes(locationName)) {
+            if (this.locationsToIgnore.includes(locationId)) {
                 continue;
             }
 
             const locationData: ILocation = locationObj;
 
-            if (locationName === "tarkovstreets") {
+            if (locationId === "tarkovstreets") {
                 this.makeAllZonesOpenForStreets(locationData);
             }
 
             const marksmanZones =
-                locationName === "tarkovstreets"
+                locationId === "tarkovstreets"
                     ? this.getLocationMarksmanZonesNew(locationData.base)
                     : this.getLocationMarksmanZones(locationData.base);
 
             const zones =
-                locationName === "tarkovstreets"
+                locationId === "tarkovstreets"
                     ? this.getLocationZonesNew(locationData.base)
-                    : this.getLocationZones(locationName, locationData.base);
+                    : this.getLocationZones(locationId, locationData.base);
 
             const minPlayers = this.getLocationMinPlayers(locationData.base);
 
             const maxPlayers =
-                locationName === "tarkovstreets" && config.streetsQuietRaids
+                locationId === "tarkovstreets" && config.streetsQuietRaids
                     ? minPlayers
                     : this.getLocationMaxPlayers(locationData.base);
 
             const maxMarksmans = this.getLocationMaxMarksmans(
-                locationName,
+                locationId,
                 marksmanZones.length
             );
 
             const maxBots = this.getLocationMaxBots(
-                locationName,
+                locationId,
                 locationData.base
             );
             const maxScavs = maxBots - maxMarksmans;
 
-            this.generalLocationInfo[locationName] = {
+            this.generalLocationInfo[locationId] = {
                 marksmanZones,
                 zones,
                 maxBots,
