@@ -74,6 +74,8 @@ export class UndaWavesGenerator extends PmcWaveGenerator {
         "ZoneSnipeStilo",
     ];
 
+    readonly mapsWithDoubleMarksmans: string[] = ["shoreline", "tarkovstreets"];
+
     protected databaseTables: IDatabaseTables;
     protected botConfig: IBotConfig;
     protected locationConfig: ILocationConfig;
@@ -89,7 +91,7 @@ export class UndaWavesGenerator extends PmcWaveGenerator {
         @inject("RandomUtil") protected randomUtil: RandomUtil,
         @inject("DatabaseService") protected databaseService: DatabaseService,
         @inject("ConfigServer") protected configServer: ConfigServer,
-        @inject("HashUtil") protected hashUtil: HashUtil
+        @inject("HashUtil") protected hashUtil: HashUtil,
     ) {
         super(logger, randomUtil, databaseService, configServer);
     }
@@ -105,7 +107,7 @@ export class UndaWavesGenerator extends PmcWaveGenerator {
 
     public override applyWaveChangesToMapByName(name: string): void {
         this.logger.error(
-            `Unda.applyWaveChangesToMapByName(${name}) not implemented`
+            `Unda.applyWaveChangesToMapByName(${name}) not implemented`,
         );
         throw new Error("Not implemented");
     }
@@ -128,7 +130,7 @@ export class UndaWavesGenerator extends PmcWaveGenerator {
         const filteredArray = location.BossLocationSpawn.filter(
             (bossLocationSpawn) =>
                 bossLocationSpawn.BossName !== "pmcBEAR" &&
-                bossLocationSpawn.BossName !== "pmcUSEC"
+                bossLocationSpawn.BossName !== "pmcUSEC",
         );
 
         location.BossLocationSpawn = filteredArray;
@@ -141,8 +143,8 @@ export class UndaWavesGenerator extends PmcWaveGenerator {
         if (config.debug) {
             this.logger.info(
                 `[Unda] locationConfig.customWaves.boss: ${JSON.stringify(
-                    this.locationConfig.customWaves.boss
-                )}`
+                    this.locationConfig.customWaves.boss,
+                )}`,
             );
         }
     }
@@ -157,7 +159,7 @@ export class UndaWavesGenerator extends PmcWaveGenerator {
             this.increaseMaxBotsAmountForSmallLocation(
                 location,
                 maxBots,
-                maxPlayers
+                maxPlayers,
             );
         } else {
             const { maxBots, minPlayers } =
@@ -165,7 +167,7 @@ export class UndaWavesGenerator extends PmcWaveGenerator {
             this.increaseMaxBotsAmountForLargeLocation(
                 location,
                 maxBots,
-                minPlayers
+                minPlayers,
             );
         }
     }
@@ -173,11 +175,11 @@ export class UndaWavesGenerator extends PmcWaveGenerator {
     increaseMaxBotsAmountForLargeLocation(
         location: ILocationBase,
         maxBots: number,
-        minPlayers: number
+        minPlayers: number,
     ): number {
         const term = this.randomUtil.getInt(
             Math.round(minPlayers / 2),
-            minPlayers + 1
+            minPlayers + 1,
         );
         return this.increaseMaxBotsAmountForLocation(location, maxBots, term);
     }
@@ -185,18 +187,18 @@ export class UndaWavesGenerator extends PmcWaveGenerator {
     increaseMaxBotsAmountForSmallLocation(
         location: ILocationBase,
         maxBots: number,
-        maxPlayers: number
+        maxPlayers: number,
     ): number {
         const term = this.randomUtil.getInt(
             Math.round(maxPlayers / 2),
-            maxPlayers - 1
+            maxPlayers - 1,
         );
         return this.increaseMaxBotsAmountForLocation(location, maxBots, term);
     }
 
     increaseMaxBotsAmountForStreets(
         location: ILocationBase,
-        maxBots: number
+        maxBots: number,
     ): number {
         const term = this.randomUtil.getInt(2, 5);
         return this.increaseMaxBotsAmountForLocation(location, maxBots, term);
@@ -205,7 +207,7 @@ export class UndaWavesGenerator extends PmcWaveGenerator {
     increaseMaxBotsAmountForLocation(
         location: ILocationBase,
         maxBots: number,
-        term: number
+        term: number,
     ): number {
         const newMaxBotsValue = maxBots + term;
         location.BotMax = newMaxBotsValue;
@@ -215,7 +217,7 @@ export class UndaWavesGenerator extends PmcWaveGenerator {
 
         if (config.debug) {
             this.logger.info(
-                `[Unda] ${locationId}.BotMax: ${maxBots} -> ${newMaxBotsValue}`
+                `[Unda] ${locationId}.BotMax: ${maxBots} -> ${newMaxBotsValue}`,
             );
         }
         return newMaxBotsValue;
@@ -231,7 +233,7 @@ export class UndaWavesGenerator extends PmcWaveGenerator {
 
     getLocationMaxBots(
         locationName: string,
-        locationBase: ILocationBase
+        locationBase: ILocationBase,
     ): number {
         const botMax = locationBase.BotMax;
 
@@ -244,12 +246,12 @@ export class UndaWavesGenerator extends PmcWaveGenerator {
 
     getLocationMaxMarksmans(
         locationName: string,
-        marksmanLocationsAmount: number
+        marksmansLocationAmount: number,
     ): number {
-        if (locationName === "shoreline") {
-            return marksmanLocationsAmount * 2;
+        if (this.mapsWithDoubleMarksmans.includes(locationName)) {
+            return marksmansLocationAmount * 2;
         } else {
-            return marksmanLocationsAmount;
+            return marksmansLocationAmount;
         }
     }
 
@@ -259,7 +261,7 @@ export class UndaWavesGenerator extends PmcWaveGenerator {
 
     getLocationZones(
         locationName: string,
-        locationBase: ILocationBase
+        locationBase: ILocationBase,
     ): string[] {
         if (locationName === "laboratory") {
             return [
@@ -273,7 +275,7 @@ export class UndaWavesGenerator extends PmcWaveGenerator {
                         } else {
                             return bz.BossZone;
                         }
-                    })
+                    }),
                 ),
             ];
         }
@@ -293,7 +295,7 @@ export class UndaWavesGenerator extends PmcWaveGenerator {
                         } else {
                             return wave.SpawnPoints;
                         }
-                    })
+                    }),
             ),
         ];
 
@@ -309,13 +311,13 @@ export class UndaWavesGenerator extends PmcWaveGenerator {
 
     getLocationMarksmanZonesNew(base: ILocationBase): string[] {
         return base.OpenZones.split(",").filter((zone) =>
-            zone.includes("Snipe")
+            zone.includes("Snipe"),
         );
     }
 
     getLocationZonesNew(base: ILocationBase): string[] {
         return base.OpenZones.split(",").filter(
-            (zone) => !zone.includes("Snipe")
+            (zone) => !zone.includes("Snipe"),
         );
     }
 
@@ -355,7 +357,7 @@ export class UndaWavesGenerator extends PmcWaveGenerator {
         const currentWaveNumber = this.generateMarksmanWaves(
             location,
             marksmanZones,
-            maxMarksmanGroupSize
+            maxMarksmanGroupSize,
         );
 
         const maxAssaultScavAmount =
@@ -363,7 +365,7 @@ export class UndaWavesGenerator extends PmcWaveGenerator {
 
         if (maxAssaultScavAmount <= 0) {
             this.logger.error(
-                `[Unda] ${locationId}.BotMax: ${maxAssaultScavAmount}`
+                `[Unda] ${locationId}.BotMax: ${maxAssaultScavAmount}`,
             );
         }
 
@@ -378,12 +380,12 @@ export class UndaWavesGenerator extends PmcWaveGenerator {
             location.EscapeTimeLimit,
             maxAssaultScavAmount,
             maxScavGroupSize,
-            currentWaveNumber
+            currentWaveNumber,
         );
 
         if (config.debug) {
             this.logger.info(
-                `[Unda] ${locationId}.waves: ${JSON.stringify(location.waves)}`
+                `[Unda] ${locationId}.waves: ${JSON.stringify(location.waves)}`,
             );
         }
     }
@@ -395,7 +397,7 @@ export class UndaWavesGenerator extends PmcWaveGenerator {
     generateMarksmanWaves(
         locationBase: ILocationBase,
         zones: string[],
-        maxGroupSize: number
+        maxGroupSize: number,
     ): number {
         let num = 0;
         const minGroupSize = maxGroupSize > 1 ? 1 : 0;
@@ -409,8 +411,8 @@ export class UndaWavesGenerator extends PmcWaveGenerator {
                     minGroupSize,
                     maxGroupSize,
                     60,
-                    90
-                )
+                    90,
+                ),
             );
         });
 
@@ -423,19 +425,19 @@ export class UndaWavesGenerator extends PmcWaveGenerator {
         escapeTimeLimit: number,
         maxAssaultScavAmount: number,
         maxScavGroupSize: number,
-        currentWaveNumber: number
+        currentWaveNumber: number,
     ): undefined {
         const groups = this.splitMaxAmountIntoGroups(
             maxAssaultScavAmount,
-            maxScavGroupSize
+            maxScavGroupSize,
         );
 
         const groupsByZones = this.separateGroupsByZones(zones, groups);
         if (config.debug) {
             this.logger.info(
                 `[Unda] '${location.Id.toLowerCase()}' scav groups ${JSON.stringify(
-                    groupsByZones
-                )}`
+                    groupsByZones,
+                )}`,
             );
         }
 
@@ -448,7 +450,7 @@ export class UndaWavesGenerator extends PmcWaveGenerator {
             location,
             "normal",
             firstWaveTimeMin,
-            currentWaveNumber
+            currentWaveNumber,
         );
 
         this.createAssaultWaves(
@@ -456,7 +458,7 @@ export class UndaWavesGenerator extends PmcWaveGenerator {
             location,
             "normal",
             middleWaveTimeMin,
-            currentWaveNumber
+            currentWaveNumber,
         );
 
         this.createAssaultWaves(
@@ -464,7 +466,7 @@ export class UndaWavesGenerator extends PmcWaveGenerator {
             location,
             "hard",
             lastWaveTimeMin,
-            currentWaveNumber
+            currentWaveNumber,
         );
     }
 
@@ -473,7 +475,7 @@ export class UndaWavesGenerator extends PmcWaveGenerator {
         locationBase: ILocationBase,
         difficulty: string,
         timeMin: number,
-        currentWaveNumber: number
+        currentWaveNumber: number,
     ): undefined {
         const timeMax = timeMin + 120;
 
@@ -486,7 +488,7 @@ export class UndaWavesGenerator extends PmcWaveGenerator {
                 0,
                 zoneByBroup.groupSize,
                 timeMin,
-                timeMax
+                timeMax,
             );
             locationBase.waves.push(wave);
         }
@@ -500,7 +502,7 @@ export class UndaWavesGenerator extends PmcWaveGenerator {
         slotsMin: number,
         slotsMax: number,
         timeMin: number,
-        timeMax: number
+        timeMax: number,
     ): IWave {
         return {
             BotPreset: difficulty,
@@ -525,27 +527,27 @@ export class UndaWavesGenerator extends PmcWaveGenerator {
         const maxPmcAmount = this.randomUtil.getInt(minPlayers, maxPlayers) - 1;
         if (maxPmcAmount <= 0) {
             this.logger.error(
-                `[Unda] ${locationId}.maxPlayers: ${maxPmcAmount}`
+                `[Unda] ${locationId}.maxPlayers: ${maxPmcAmount}`,
             );
         }
 
         const groups = this.splitMaxAmountIntoGroups(
             maxPmcAmount,
-            config.maxPmcGroupSize
+            config.maxPmcGroupSize,
         );
 
         const zones = [...this.generalLocationInfo[locationId].zones];
 
         const groupsByZones: ZoneGroupSize[] = this.separateGroupsByZones(
             zones,
-            groups
+            groups,
         );
 
         if (config.debug) {
             this.logger.info(
                 `[Unda] '${locationId}' PMC groups ${JSON.stringify(
-                    groupsByZones
-                )}`
+                    groupsByZones,
+                )}`,
             );
         }
 
@@ -554,16 +556,16 @@ export class UndaWavesGenerator extends PmcWaveGenerator {
                 this.generatePmcAsBoss(
                     groupByZone.groupSize,
                     config.pmcBotDifficulty,
-                    groupByZone.zoneName
-                )
+                    groupByZone.zoneName,
+                ),
             );
         }
 
         if (config.debug) {
             this.logger.info(
                 `[Unda] locationConfig.customWaves.boss[${locationId}]: ${JSON.stringify(
-                    this.locationConfig.customWaves.boss[locationId]
-                )}`
+                    this.locationConfig.customWaves.boss[locationId],
+                )}`,
             );
         }
     }
@@ -591,7 +593,7 @@ export class UndaWavesGenerator extends PmcWaveGenerator {
     generatePmcAsBoss(
         groupSize: number,
         difficulty: string,
-        zone: string
+        zone: string,
     ): IBossLocationSpawn {
         const supports: IBossSupport[] = [];
         let escortAmount = "0";
@@ -631,7 +633,7 @@ export class UndaWavesGenerator extends PmcWaveGenerator {
 
     splitMaxAmountIntoGroups(
         maxAmount: number,
-        maxGroupSize: number
+        maxGroupSize: number,
     ): number[] {
         const result: number[] = [];
 
@@ -671,18 +673,18 @@ export class UndaWavesGenerator extends PmcWaveGenerator {
     public fillInitialData(): undefined {
         this.databaseTables = this.databaseService.getTables();
         this.botConfig = this.configServer.getConfig<IBotConfig>(
-            ConfigTypes.BOT
+            ConfigTypes.BOT,
         );
         this.pmcConfig = this.configServer.getConfig<IPmcConfig>(
-            ConfigTypes.PMC
+            ConfigTypes.PMC,
         );
         this.locationConfig = this.configServer.getConfig<ILocationConfig>(
-            ConfigTypes.LOCATION
+            ConfigTypes.LOCATION,
         );
         this.locations = this.databaseTables.locations;
 
         for (const [locationId, locationObj] of Object.entries(
-            this.locations
+            this.locations,
         )) {
             if (this.locationsToIgnore.includes(locationId)) {
                 continue;
@@ -713,12 +715,12 @@ export class UndaWavesGenerator extends PmcWaveGenerator {
 
             const maxMarksmans = this.getLocationMaxMarksmans(
                 locationId,
-                marksmanZones.length
+                marksmanZones.length,
             );
 
             const maxBots = this.getLocationMaxBots(
                 locationId,
-                locationData.base
+                locationData.base,
             );
             const maxScavs = maxBots - maxMarksmans;
 
@@ -736,8 +738,8 @@ export class UndaWavesGenerator extends PmcWaveGenerator {
         if (config.debug) {
             this.logger.info(
                 `[Unda] generalLocationInfo: ${JSON.stringify(
-                    this.generalLocationInfo
-                )}`
+                    this.generalLocationInfo,
+                )}`,
             );
         }
 
