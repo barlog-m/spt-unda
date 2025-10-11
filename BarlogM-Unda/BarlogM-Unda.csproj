@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <RootNamespace>BarlogM_Unda</RootNamespace>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <None Include="$(MSBuildProjectFullPath).user" Condition="Exists('$(MSBuildProjectFullPath).user')"/>
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="SPTarkov.Common" Version="4.0.0-pre.20251010.1631" />
+      <PackageReference Include="SPTarkov.DI" Version="4.0.0-pre.20251010.1631" />
+      <PackageReference Include="SPTarkov.Server.Core" Version="4.0.0-pre.20251010.1631" />
+    </ItemGroup>
+
+    <PropertyGroup>
+        <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+        <SPTPath>/home/barlog/.wine_tarkov/drive_c/Play/SPTarkov/SPT</SPTPath>
+        <ModsDirectoryPath>$(SPTPath)\user\mods\$(MSBuildProjectName)</ModsDirectoryPath>
+    </PropertyGroup>
+
+    <Target Name="CopyToSPT" AfterTargets="AfterBuild" Condition="'$(SPTPath)' != ''">
+        <Message Importance="high" Text="Copying mods to $(ModsDirectoryPath)"/>
+        <ItemGroup>
+            <FilesToCopy Include="$(OutputPath)$(TargetName)$(TargetExt)"/>
+            <FilesToCopy Include="$(OutputPath)$(TargetName).pdb"/>
+        </ItemGroup>
+        <Copy SourceFiles="@(FilesToCopy)" DestinationFolder="$(ModsDirectoryPath)" ContinueOnError="false"/>
+        <Message Text="Files copied"/>
+    </Target>
+</Project>

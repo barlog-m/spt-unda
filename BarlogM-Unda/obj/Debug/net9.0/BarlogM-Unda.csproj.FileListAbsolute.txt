@@ -1,0 +1,11 @@
+/mnt/data/github/spt-unda/BarlogM-Unda/bin/Debug/net9.0/BarlogM-Unda.dll
+/mnt/data/github/spt-unda/BarlogM-Unda/bin/Debug/net9.0/BarlogM-Unda.pdb
+/mnt/data/github/spt-unda/BarlogM-Unda/obj/Debug/net9.0/BarlogM-Unda.csproj.AssemblyReference.cache
+/mnt/data/github/spt-unda/BarlogM-Unda/obj/Debug/net9.0/BarlogM-Unda.GeneratedMSBuildEditorConfig.editorconfig
+/mnt/data/github/spt-unda/BarlogM-Unda/obj/Debug/net9.0/BarlogM-Unda.AssemblyInfoInputs.cache
+/mnt/data/github/spt-unda/BarlogM-Unda/obj/Debug/net9.0/BarlogM-Unda.AssemblyInfo.cs
+/mnt/data/github/spt-unda/BarlogM-Unda/obj/Debug/net9.0/BarlogM-Unda.csproj.CoreCompileInputs.cache
+/mnt/data/github/spt-unda/BarlogM-Unda/obj/Debug/net9.0/BarlogM-Unda.sourcelink.json
+/mnt/data/github/spt-unda/BarlogM-Unda/obj/Debug/net9.0/BarlogM-Unda.dll
+/mnt/data/github/spt-unda/BarlogM-Unda/obj/Debug/net9.0/refint/BarlogM-Unda.dll
+/mnt/data/github/spt-unda/BarlogM-Unda/obj/Debug/net9.0/BarlogM-Unda.pdb
