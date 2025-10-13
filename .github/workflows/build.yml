@@ -26,7 +26,7 @@ jobs:
       - name: Build
         run: |
           cd ${{ env.PROJECT_NAME }}
-          dotnet build --configuration Release --verbosity detailed --ouput release
+          dotnet build --configuration Release --verbosity detailed --output release
 
       - name: Create zip archive
         run: |
