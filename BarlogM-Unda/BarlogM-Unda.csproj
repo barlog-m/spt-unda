@@ -8,10 +8,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <None Include="$(MSBuildProjectFullPath).user" Condition="Exists('$(MSBuildProjectFullPath).user')"/>
-    </ItemGroup>
-
-    <ItemGroup>
         <PackageReference Include="SPTarkov.Common" Version="4.0.0">
             <Private>false</Private>
             <ExcludeAssets>runtime</ExcludeAssets>
