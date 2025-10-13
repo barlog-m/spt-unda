@@ -12,10 +12,48 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="SPTarkov.Common" Version="4.0.0-pre.20251010.1631" />
-      <PackageReference Include="SPTarkov.DI" Version="4.0.0-pre.20251010.1631" />
-      <PackageReference Include="SPTarkov.Server.Core" Version="4.0.0-pre.20251010.1631" />
+        <PackageReference Include="SPTarkov.Common" Version="4.0.0">
+            <Private>false</Private>
+            <ExcludeAssets>runtime</ExcludeAssets>
+        </PackageReference>
+        <PackageReference Include="SPTarkov.DI" Version="4.0.0">
+            <Private>false</Private>
+            <ExcludeAssets>runtime</ExcludeAssets>
+        </PackageReference>
+        <PackageReference Include="SPTarkov.Server.Core" Version="4.0.0">
+            <Private>false</Private>
+            <ExcludeAssets>runtime</ExcludeAssets>
+        </PackageReference>
     </ItemGroup>
+
+    <ItemGroup>
+        <Content Include="config\config.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+        </Content>
+        <Content Include="..\LICENSE">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+        </Content>
+        <Content Include="..\README.md">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+        </Content>
+    </ItemGroup>
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <OutputType>Library</OutputType>
+
+        <Configuration>Release</Configuration>
+
+        <DebugType>none</DebugType>
+        <DebugSymbols>false</DebugSymbols>
+
+        <GenerateDependencyFile>false</GenerateDependencyFile>
+        <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+        <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
+    </PropertyGroup>
 
     <PropertyGroup>
         <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
@@ -27,7 +65,6 @@
         <Message Importance="high" Text="Copying mods to $(ModsDirectoryPath)"/>
         <ItemGroup>
             <FilesToCopy Include="$(OutputPath)$(TargetName)$(TargetExt)"/>
-            <FilesToCopy Include="$(OutputPath)$(TargetName).pdb"/>
         </ItemGroup>
         <Copy SourceFiles="@(FilesToCopy)" DestinationFolder="$(ModsDirectoryPath)" ContinueOnError="false"/>
         <Message Text="Files copied"/>

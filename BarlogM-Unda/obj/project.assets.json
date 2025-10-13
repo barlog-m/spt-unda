@@ -8,7 +8,7 @@
           "lib/net8.0/FastCloner.dll": {}
         },
         "runtime": {
-          "lib/net8.0/FastCloner.dll": {}
+          "lib/net8.0/_._": {}
         }
       },
       "JetBrains.Annotations/2025.2.2": {
@@ -19,7 +19,7 @@
           }
         },
         "runtime": {
-          "lib/netstandard2.0/JetBrains.Annotations.dll": {
+          "lib/netstandard2.0/_._": {
             "related": ".deps.json;.xml"
           }
         }
@@ -32,7 +32,7 @@
           }
         },
         "runtime": {
-          "lib/net9.0/Microsoft.Extensions.DependencyInjection.Abstractions.dll": {
+          "lib/net9.0/_._": {
             "related": ".xml"
           }
         },
@@ -46,10 +46,10 @@
           "lib/netstandard2.0/SemanticVersioning.dll": {}
         },
         "runtime": {
-          "lib/netstandard2.0/SemanticVersioning.dll": {}
+          "lib/netstandard2.0/_._": {}
         }
       },
-      "SPTarkov.Common/4.0.0-pre.20251010.1631": {
+      "SPTarkov.Common/4.0.0": {
         "type": "package",
         "dependencies": {
           "SemanticVersioning": "3.0.0"
@@ -60,7 +60,7 @@
           }
         },
         "runtime": {
-          "lib/net9.0/SPTarkov.Common.dll": {
+          "lib/net9.0/_._": {
             "related": ".xml"
           }
         },
@@ -68,7 +68,7 @@
           "Microsoft.AspNetCore.App"
         ]
       },
-      "SPTarkov.DI/4.0.0-pre.20251010.1631": {
+      "SPTarkov.DI/4.0.0": {
         "type": "package",
         "dependencies": {
           "JetBrains.Annotations": "2025.2.2",
@@ -80,17 +80,17 @@
           }
         },
         "runtime": {
-          "lib/net9.0/SPTarkov.DI.dll": {
+          "lib/net9.0/_._": {
             "related": ".xml"
           }
         }
       },
-      "SPTarkov.Server.Core/4.0.0-pre.20251010.1631": {
+      "SPTarkov.Server.Core/4.0.0": {
         "type": "package",
         "dependencies": {
           "FastCloner": "3.3.16",
-          "SPTarkov.Common": "4.0.0-pre.20251010.1631",
-          "SPTarkov.DI": "4.0.0-pre.20251010.1631",
+          "SPTarkov.Common": "4.0.0",
+          "SPTarkov.DI": "4.0.0",
           "System.IO.Hashing": "9.0.9"
         },
         "compile": {
@@ -99,7 +99,7 @@
           }
         },
         "runtime": {
-          "lib/net9.0/SPTarkov.Server.Core.dll": {
+          "lib/net9.0/_._": {
             "related": ".xml"
           }
         }
@@ -112,7 +112,7 @@
           }
         },
         "runtime": {
-          "lib/net9.0/System.IO.Hashing.dll": {
+          "lib/net9.0/_._": {
             "related": ".xml"
           }
         },
@@ -206,45 +206,45 @@
         "semanticversioning.nuspec"
       ]
     },
-    "SPTarkov.Common/4.0.0-pre.20251010.1631": {
-      "sha512": "Y2vnEAbZGeMNPi3cg0ZE4Tvs54uDU8a91aMbxYSMDe8G0Bt5ozcI//67Kw+Gr83mfDejiRaMWJooZ2c9eEoBug==",
+    "SPTarkov.Common/4.0.0": {
+      "sha512": "1v56bv6WdAFbqKhpfKFPl08wLV10uIeFKmaIemWWJj8Mw96DMIFOwKEBc94VUWYeshwPNHvyZGyGrlqPduuTZg==",
       "type": "package",
-      "path": "sptarkov.common/4.0.0-pre.20251010.1631",
+      "path": "sptarkov.common/4.0.0",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "LICENSE",
         "lib/net9.0/SPTarkov.Common.dll",
         "lib/net9.0/SPTarkov.Common.xml",
-        "sptarkov.common.4.0.0-pre.20251010.1631.nupkg.sha512",
+        "sptarkov.common.4.0.0.nupkg.sha512",
         "sptarkov.common.nuspec"
       ]
     },
-    "SPTarkov.DI/4.0.0-pre.20251010.1631": {
-      "sha512": "Te/Y+gLYm6HZpaLl8vOZp9RUZVxNfbC1VYv+z6Rq/MHkevh/r12lMTbblBnnAlott16s5psu5nwVG0J5N5VBQw==",
+    "SPTarkov.DI/4.0.0": {
+      "sha512": "cxYdqtPrx/fI0hw4npTTkhuQw411UP2KYQe99ajuS5i3RIFXHoqdjLBFAA+48rVpZNxAsWUI+1C2cKZVVA4ANA==",
       "type": "package",
-      "path": "sptarkov.di/4.0.0-pre.20251010.1631",
+      "path": "sptarkov.di/4.0.0",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "LICENSE",
         "lib/net9.0/SPTarkov.DI.dll",
         "lib/net9.0/SPTarkov.DI.xml",
-        "sptarkov.di.4.0.0-pre.20251010.1631.nupkg.sha512",
+        "sptarkov.di.4.0.0.nupkg.sha512",
         "sptarkov.di.nuspec"
       ]
     },
-    "SPTarkov.Server.Core/4.0.0-pre.20251010.1631": {
-      "sha512": "e1ozeFP7L3PFWpv9c8cgSvBV6tCt2cfdeJVmfyzq0FM2DnQON0SvpjQ7/5SNFTnq/rIdzfWUgMTtba0yAppTLA==",
+    "SPTarkov.Server.Core/4.0.0": {
+      "sha512": "0Io4VO29aPw9Fd5xiMRGFvY6viRiFyNvqXHeX2hOwU8VoSoCtlHYlVJmwadoafZkgqWnaz1dRbTLZZKlo0OAlg==",
       "type": "package",
-      "path": "sptarkov.server.core/4.0.0-pre.20251010.1631",
+      "path": "sptarkov.server.core/4.0.0",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "LICENSE",
         "lib/net9.0/SPTarkov.Server.Core.dll",
         "lib/net9.0/SPTarkov.Server.Core.xml",
-        "sptarkov.server.core.4.0.0-pre.20251010.1631.nupkg.sha512",
+        "sptarkov.server.core.4.0.0.nupkg.sha512",
         "sptarkov.server.core.nuspec"
       ]
     },
@@ -279,9 +279,9 @@
   },
   "projectFileDependencyGroups": {
     "net9.0": [
-      "SPTarkov.Common >= 4.0.0-pre.20251010.1631",
-      "SPTarkov.DI >= 4.0.0-pre.20251010.1631",
-      "SPTarkov.Server.Core >= 4.0.0-pre.20251010.1631"
+      "SPTarkov.Common >= 4.0.0",
+      "SPTarkov.DI >= 4.0.0",
+      "SPTarkov.Server.Core >= 4.0.0"
     ]
   },
   "packageFolders": {
@@ -328,16 +328,19 @@
         "targetAlias": "net9.0",
         "dependencies": {
           "SPTarkov.Common": {
+            "include": "Compile, Build, Native, ContentFiles, Analyzers, BuildTransitive",
             "target": "Package",
-            "version": "[4.0.0-pre.20251010.1631, )"
+            "version": "[4.0.0, )"
           },
           "SPTarkov.DI": {
+            "include": "Compile, Build, Native, ContentFiles, Analyzers, BuildTransitive",
             "target": "Package",
-            "version": "[4.0.0-pre.20251010.1631, )"
+            "version": "[4.0.0, )"
           },
           "SPTarkov.Server.Core": {
+            "include": "Compile, Build, Native, ContentFiles, Analyzers, BuildTransitive",
             "target": "Package",
-            "version": "[4.0.0-pre.20251010.1631, )"
+            "version": "[4.0.0, )"
           }
         },
         "imports": [

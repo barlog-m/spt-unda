@@ -7,14 +7,7 @@
 
 # IDEA
 .idea/
-out/
-classes/
-*.iml
 
-# npm
-node_modules/
-dist/
-package-lock.json
+obj/
+bin/
 
-# yarn
-yarn.lock
