@@ -24,8 +24,9 @@ jobs:
           dotnet-version: '9.0.x'
 
       - name: Build
-        cd ${{ env.PROJECT_NAME }}
-        run: dotnet build --configuration Release
+        run: |
+          cd ${{ env.PROJECT_NAME }}
+          dotnet build --configuration Release
 
       - name: Create zip archive
         run: |
