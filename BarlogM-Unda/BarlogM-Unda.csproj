@@ -54,19 +54,4 @@
         <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
         <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
     </PropertyGroup>
-
-    <PropertyGroup>
-        <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-        <SPTPath>/home/barlog/.wine_tarkov/drive_c/Play/SPTarkov/SPT</SPTPath>
-        <ModsDirectoryPath>$(SPTPath)\user\mods\$(MSBuildProjectName)</ModsDirectoryPath>
-    </PropertyGroup>
-
-    <Target Name="CopyToSPT" AfterTargets="AfterBuild" Condition="'$(SPTPath)' != ''">
-        <Message Importance="high" Text="Copying mods to $(ModsDirectoryPath)"/>
-        <ItemGroup>
-            <FilesToCopy Include="$(OutputPath)$(TargetName)$(TargetExt)"/>
-        </ItemGroup>
-        <Copy SourceFiles="@(FilesToCopy)" DestinationFolder="$(ModsDirectoryPath)" ContinueOnError="false"/>
-        <Message Text="Files copied"/>
-    </Target>
 </Project>
