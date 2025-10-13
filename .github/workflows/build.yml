@@ -31,7 +31,7 @@ jobs:
       - name: Create zip archive
         run: |
           mv dist ${{ env.PROJECT_NAME }}
-          zip -r app-release.zip ${{ env.PROJECT_NAME }}
+          zip -r ${{ env.PROJECT_NAME }}.zip ${{ env.PROJECT_NAME }}
 
       - name: Release
         uses: softprops/action-gh-release@v1
