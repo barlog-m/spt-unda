@@ -26,12 +26,12 @@ jobs:
       - name: Build
         run: |
           cd ${{ env.PROJECT_NAME }}
-          dotnet build --configuration Release --verbosity detailed --output release
+          dotnet build --configuration Release --verbosity detailed --output dist
 
       - name: Create zip archive
         run: |
           cd ..
-          mv release ./${{ env.PROJECT_NAME }}
+          mv dist ./${{ env.PROJECT_NAME }}
           zip -r app-release.zip ${{ env.PROJECT_NAME }}
 
       - name: Release
