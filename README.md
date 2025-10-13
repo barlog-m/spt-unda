@@ -18,7 +18,7 @@ This mod realize only one algorithm for spawns with minimal settings.
 
 ## For PMC
 
-Amount of PMC randomly selected between `locationData.base.MinPlayers` and `locationData.base.MaxPlayers` split by random size groups from 1 to `config.maxPmcGroupSize` randomly spreaded by bot spawn zones. List of zones shuffle every time. PMC spawns as a bosses and followers in beginnig of raid (game spawn them in first 60 seconds).
+Amount of PMC always `locationData.base.MinPlayers`. Split by random size groups from 1 to `config.maxPmcGroupSize` randomly spreaded by bot spawn zones. List of zones shuffle every time. PMC spawns as a bosses and followers in beginnig of raid (game spawn them in first 60 seconds).
 
 ## For Scavs
 
