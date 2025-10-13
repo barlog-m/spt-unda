@@ -30,6 +30,7 @@ jobs:
 
       - name: Create zip archive
         run: |
+          cd ${{ env.PROJECT_NAME }}
           mv dist ${{ env.PROJECT_NAME }}
           zip -r ${{ env.PROJECT_NAME }}.zip ${{ env.PROJECT_NAME }}
 
