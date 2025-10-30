@@ -8,22 +8,23 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="SPTarkov.Common" Version="4.0.0">
+        <PackageReference Include="SPTarkov.Common" Version="4.0.2">
             <Private>false</Private>
             <ExcludeAssets>runtime</ExcludeAssets>
         </PackageReference>
-        <PackageReference Include="SPTarkov.DI" Version="4.0.0">
+        <PackageReference Include="SPTarkov.DI" Version="4.0.2">
             <Private>false</Private>
             <ExcludeAssets>runtime</ExcludeAssets>
         </PackageReference>
-        <PackageReference Include="SPTarkov.Server.Core" Version="4.0.0">
+        <PackageReference Include="SPTarkov.Server.Core" Version="4.0.2">
             <Private>false</Private>
             <ExcludeAssets>runtime</ExcludeAssets>
         </PackageReference>
     </ItemGroup>
 
     <ItemGroup>
-        <Content Include="config\config.json">
+        <Content Include="config\**">
+            <Link>config\%(RecursiveDir)%(Filename)%(Extension)</Link>
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
             <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
         </Content>

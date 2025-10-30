@@ -235,7 +235,7 @@ public class PmcWaveGeneratorEx(
             BossEscortType = type,
             BossName = type,
             IsBossPlayer = true,
-            BossZone = zone,
+            BossZone = "",
             IsRandomTimeSpawn = false,
             ShowOnTarkovMap = false,
             ShowOnTarkovMapPvE = false,
@@ -248,7 +248,7 @@ public class PmcWaveGeneratorEx(
             DependKarmaPVE = null,
             Supports = supports,
             SptId = null,
-            SpawnMode = new List<string> { "regular", "pve" }
+            SpawnMode = new List<string> { "pve" }
         };
     }
 
