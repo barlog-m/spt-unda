@@ -284,7 +284,7 @@ public class PmcWaveGeneratorEx(
     {
         var locationId = location.Id.ToLower();
 
-        if (locationId == "laboratory") return;
+        if (locationId == "laboratory" || locationId == "labyrinth") return;
 
         var marksmanZones =
             data.GeneralLocationInfo[locationId].MarksmanZones;
