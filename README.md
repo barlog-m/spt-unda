@@ -14,26 +14,12 @@ This mod is meant to be as simple as possible.
 
 If you happy with big spawn mods don't use this one. I made it mostly for myself to keep game as close as possible to vanila SPT-AKI and fix issue when PMC spawns among Scavs and immidently kill each other.
 
-This mod realize only one algorithm for spawns with minimal settings.
+This mod only force PMC spawns only at the beginning of the raid.
 
 ## For PMC
 
-Amount of PMC always `locationData.base.MinPlayers`. Split by random size groups from 1 to `config.maxPmcGroupSize` randomly spreaded by bot spawn zones. List of zones shuffle every time. PMC spawns as a bosses and followers in beginnig of raid (game spawn them in first 60 seconds).
+Amount of PMC always is `locationData.base.MinPlayers`. Split by random size groups from 1 to `config.maxPmcGroupSize` randomly spreaded by bot spawn zones. List of zones shuffle every time. PMC spawns as a bosses and followers in beginnig of raid (game spawn them in first 60 seconds).
 
 ## For Scavs
 
-Maximum amount of regular scavs on a map (locationData.base.BotMax - amount of marksman scavs) split by random size groups from 0 to `config.maxScavGroupSize` randomly spreaded by spawn zones.
-
-Scavs spawns in 3 general waves:
-
-- normal difficulty between 60 seconds and +120 seconds.
-- normal difficulty between `raidLength / 4` and +120 seconds.
-- hard difficulty between `raidLength / 2` and +120 seconds.
-
-**PMC and Scavs waves and groups generate after each raid from scratch.**
-
-Since PMC bots count as bots in game, mod increases MaxBots value for most maps by random value between `MinPlayers / 2` and `MinPlayers + 1`.
-
-For small maps like Factory, Laboratory and Reserve by random value between `MaxPlayers / 2` and `MaxPlayers - 1`.
-
-If option `streetsQuietRaids` set to `true` then for Streets max amount of bots does not change, max scav group size is 3 and amount of PMC always MinPlayers.
+Mod do nothing with waves of scavs
