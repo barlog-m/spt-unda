@@ -43,7 +43,7 @@ public class RaidTimeAdjustmentServiceEx(
 
         mapBase.EscapeTimeLimit = raidAdjustments.RaidTimeMinutes;
 
-        foreach (var exitChange in raidAdjustments.ExitChanges)
+        foreach (var exitChange in raidAdjustments.ExitChanges!)
         {
             var exitToChange = mapBase.Exits.FirstOrDefault(exit => exit.Name == exitChange.Name);
             if (exitToChange is null)

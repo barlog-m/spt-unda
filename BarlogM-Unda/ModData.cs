@@ -19,6 +19,6 @@ public class ModData
 
         var pathToConfig = Path.Join(PathToMod, "config");
         ModConfig = jsonUtil.Deserialize<ModConfig>(
-            modHelper.GetRawFileData(pathToConfig, "config.json"));
+            modHelper.GetRawFileData(pathToConfig, "config.json"))!;
     }
 }

@@ -1,5 +1,7 @@
 {
     "MaxPmcGroupSize": 3,
+    "MaxScavGroupSize": 3,
     "PmcBotDifficulty": "normal",
+    "ChanceForQuietRaid": 30,
     "Debug": false
 }
