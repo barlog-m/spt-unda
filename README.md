@@ -12,7 +12,7 @@ Inspired by [BetterSpawnsPlus](https://hub.sp-tarkov.com/files/file/1002-betters
 Any of this mods can do more and do it better.
 This mod is meant to be as simple as possible.
 
-If you happy with big spawn mods don't use this one. I made it mostly for myself to keep game as close as possible to vanila SPT-AKI and fix issue when PMC spawns among Scavs and immidently kill each other.
+If you happy with big spawn mods don't use this one. I made it for myself to keep game as close as possible to vanila SPT-AKI and fix issue when PMC spawns among Scavs and immidently kill each other.
 
 This mod only force PMC spawns only at the beginning of the raid.
 
@@ -22,4 +22,18 @@ Amount of PMC always is `locationData.base.MinPlayers`. Split by random size gro
 
 ## For Scavs
 
-Mod do nothing with waves of scavs
+Maximum amount of regular scavs on a map (locationData.base.BotMax - amount of marksman scavs) split by random size groups from 0 to `config.maxScavGroupSize` randomly spreaded by spawn zones.
+
+Scavs spawns in 3 general waves:
+
+- normal difficulty between 60 seconds and +120 seconds.
+- normal difficulty between `raidLength / 4` and +120 seconds.
+- hard difficulty between `raidLength / 2` and +120 seconds.
+
+**PMC and Scavs waves and groups generate after each raid from scratch.**
+
+Since PMC bots count as bots in game, mod increases MaxBots value for most maps by random value between `MinPlayers / 2` and `MinPlayers + 1`.
+
+`ChanceForQuietRaid` option changes percent when MaxBots value for map does not increase.
+
+For small maps like Factory, Laboratory and Reserve by random value between `MaxPlayers / 2` and `MaxPlayers - 1`.
